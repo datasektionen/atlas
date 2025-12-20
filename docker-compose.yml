@@ -1,0 +1,38 @@
+services:
+  atlas:
+    build: .
+    ports:
+      - "127.0.0.1:6767:6767"
+    environment:
+      ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
+    develop:
+      watch:
+        - path: ./src
+          action: rebuild
+        - path: ./Cargo.*
+          action: rebuild
+        - path: ./atlas.toml
+          action: sync+restart
+          target: /atlas/atlas.toml
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:18
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - atlas-db-data:/data/db
+    environment:
+      POSTGRES_USER: atlas
+      POSTGRES_PASSWORD: atlas
+      POSTGRES_DB: atlas
+      PG_DATA: /data/db
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "atlas"]
+      interval: 2s
+      timeout: 2s
+      retries: 3
+
+volumes:
+  atlas-db-data:

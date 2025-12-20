@@ -1,0 +1,18 @@
+[package]
+name = "atlas"
+version = "0.1.0"
+edition = "2024"
+authors = ["Konglig Datasektionen"]
+description = "News and event system"
+license = "GPL-3.0-or-later"
+rust-version = "1.92"
+
+[dependencies]
+askama = "0.14.0"
+figment = { version = "0.10.19", features = ["toml", "env"] }
+log = "0.4.29"
+rocket = "0.5.1"
+serde = "1.0.228"
+simplelog = "0.12.2"
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres"] }
+thiserror = "2.0.17"
