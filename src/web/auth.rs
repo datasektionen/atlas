@@ -55,7 +55,7 @@ async fn oidc_callback(
     oidc_client: &State<OidcClient>,
     jar: &CookieJar<'_>,
 ) -> AppResult<Redirect> {
-    let OidcAuthenticationResult { session, next } =
+    let OidcAuthenticationResult { session: _, next } =
         auth::finish_authentication(code, state, oidc_client, jar).await?;
 
     let target = next.unwrap_or_else(|| Origin::parse("/").unwrap());

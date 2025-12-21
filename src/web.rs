@@ -1,4 +1,5 @@
 use askama::Template;
+use log::*;
 use rocket::response::content::RawHtml;
 
 use crate::{errors::AppResult, guards::context::PageContext, routing::RouteTree};
@@ -19,6 +20,10 @@ struct IndexView {
 
 #[rocket::get("/")]
 fn index(ctx: PageContext) -> AppResult<RenderedTemplate> {
+    if let Some(ref user) = ctx.user {
+        debug!("Permissions: {:?}", user.permissions());
+    }
+
     let template = IndexView { ctx };
 
     Ok(RawHtml(template.render()?))

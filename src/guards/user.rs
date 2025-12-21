@@ -18,6 +18,10 @@ impl User {
     pub fn display_name(&self) -> &str {
         &self.0.display_name
     }
+
+    pub fn permissions(&self) -> &auth::hive::HivePermissionSet {
+        &self.0.permissions
+    }
 }
 
 #[rocket::async_trait]

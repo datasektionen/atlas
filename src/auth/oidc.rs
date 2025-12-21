@@ -2,14 +2,21 @@ use std::borrow::Cow;
 
 use log::*;
 use openidconnect::{
-    AsyncHttpClient, AuthenticationFlow, AuthorizationCode, ClientId, ClientSecret, CsrfToken,
-    EndpointMaybeSet, EndpointNotSet, EndpointSet, IssuerUrl, Nonce, RedirectUrl, Scope,
-    core::{CoreClient, CoreProviderMetadata, CoreResponseType},
+    AdditionalClaims, AsyncHttpClient, AuthenticationFlow, AuthorizationCode, Client, ClientId,
+    ClientSecret, CsrfToken, EmptyExtraTokenFields, EndpointMaybeSet, EndpointNotSet, EndpointSet,
+    IdTokenFields, IssuerUrl, Nonce, RedirectUrl, Scope, StandardErrorResponse,
+    StandardTokenResponse,
+    core::{
+        CoreAuthDisplay, CoreAuthPrompt, CoreErrorResponseType, CoreGenderClaim, CoreJsonWebKey,
+        CoreJweContentEncryptionAlgorithm, CoreJwsSigningAlgorithm, CoreProviderMetadata,
+        CoreResponseType, CoreRevocableToken, CoreRevocationErrorResponse,
+        CoreTokenIntrospectionResponse, CoreTokenType,
+    },
 };
 use rocket::http::uri::Origin;
 use serde::{Deserialize, Serialize};
 
-use super::Session;
+use super::{Session, hive::HivePermission};
 
 pub struct OidcConfig {
     pub issuer_url: String,
@@ -59,15 +66,51 @@ pub struct OidcAuthenticationResult<'n> {
     pub next: Option<Origin<'n>>,
 }
 
+pub type OidcTokenResponse = StandardTokenResponse<OidcIdTokenFields, CoreTokenType>;
+
+pub type OidcIdTokenFields = IdTokenFields<
+    OidcAdditionalClaims,
+    EmptyExtraTokenFields,
+    CoreGenderClaim,
+    CoreJweContentEncryptionAlgorithm,
+    CoreJwsSigningAlgorithm,
+>;
+
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize)]
+pub struct OidcAdditionalClaims {
+    permissions: Vec<HivePermission>,
+}
+
+impl AdditionalClaims for OidcAdditionalClaims {}
+
 // wrapper for simplicity and impl'ing
 pub struct OidcClient {
-    client: CoreClient<
-        EndpointSet,      // has auth URL
-        EndpointNotSet,   // has device auth URL
-        EndpointNotSet,   // has introspection URL
-        EndpointNotSet,   // has revocation URL
-        EndpointMaybeSet, // has token URL
-        EndpointMaybeSet, // has user info URL
+    client: Client<
+        // Custom additional claim 'permissions'
+        OidcAdditionalClaims,
+        CoreAuthDisplay,
+        CoreGenderClaim,
+        CoreJweContentEncryptionAlgorithm,
+        CoreJsonWebKey,
+        CoreAuthPrompt,
+        StandardErrorResponse<CoreErrorResponseType>,
+        // TokenResponse also references additional claims
+        OidcTokenResponse,
+        CoreTokenIntrospectionResponse,
+        CoreRevocableToken,
+        CoreRevocationErrorResponse,
+        // Has auth URL
+        EndpointSet,
+        // Has device auth URL
+        EndpointNotSet,
+        // Has introspection URL
+        EndpointNotSet,
+        // Has revocation URL
+        EndpointNotSet,
+        // Has token URL
+        EndpointMaybeSet,
+        // Has user info URL
+        EndpointMaybeSet,
     >,
     http_client: openidconnect::reqwest::Client,
 }
@@ -89,7 +132,7 @@ impl OidcClient {
         let client_secret = ClientSecret::new(config.client_secret);
 
         let client =
-            CoreClient::from_provider_metadata(provider_metadata, client_id, Some(client_secret));
+            Client::from_provider_metadata(provider_metadata, client_id, Some(client_secret));
 
         Ok(Self {
             client,
@@ -116,6 +159,7 @@ impl OidcClient {
                 Nonce::new_random,
             )
             .add_scope(Scope::new("profile".to_owned()))
+            .add_scope(Scope::new("permissions".to_owned()))
             .set_redirect_uri(Cow::Borrowed(&redirect_url))
             .url();
 
@@ -163,9 +207,12 @@ impl OidcClient {
             .map(|value| value.1)
             .ok_or(OidcAuthenticationError::NoNameClaim)?;
 
+        let additional_claims = claims.additional_claims();
+
         let session = Session {
             username: claims.subject().to_string(),
             display_name: end_user_name.to_string(),
+            permissions: additional_claims.permissions.clone().into(),
             expiration: claims.expiration().into(),
         };
 

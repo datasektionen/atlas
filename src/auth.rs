@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::errors::{AppError, AppResult};
 
+pub mod hive;
 pub mod oidc;
 
 // can't be __Host- because it would not work on http://localhost in Chrome
@@ -16,6 +17,7 @@ const AUTH_COOKIE: &str = "Atlas-Auth";
 pub struct Session {
     pub username: String,
     pub display_name: String,
+    pub permissions: hive::HivePermissionSet,
     pub expiration: DateTime<Local>,
 }
 

@@ -30,6 +30,19 @@
     <div id="methone-container-replace"></div>
     <div id="application">
         <p>Hello, world!</p>
+        {% if let Some(user) = ctx.user %}
+        <p>Permissions for {{ user.username() }}:</p>
+        <ul>
+            {% for (id, scope) in user.permissions() %}
+            <li>
+                {{ id }}
+                {% if let Some(scope) = scope %}
+                :{{ scope }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 </body>
 </html>
