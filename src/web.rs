@@ -1,23 +1,25 @@
 use askama::Template;
 use rocket::response::content::RawHtml;
 
-use crate::{config::Config, errors::AppResult, routing::RouteTree};
+use crate::{errors::AppResult, guards::context::PageContext, routing::RouteTree};
+
+mod auth;
 
 type RenderedTemplate = RawHtml<String>;
 
 pub fn tree() -> RouteTree {
-    RouteTree::Branch(vec![rocket::routes![index].into()])
+    RouteTree::Branch(vec![auth::routes(), rocket::routes![index].into()])
 }
 
 #[derive(Template)]
 #[template(path = "index.html.j2")]
-struct IndexView<'a> {
-    name: &'a str,
+struct IndexView {
+    ctx: PageContext,
 }
 
 #[rocket::get("/")]
-fn index(config: &Config) -> AppResult<RenderedTemplate> {
-    let template = IndexView { name: &config.bruh };
+fn index(ctx: PageContext) -> AppResult<RenderedTemplate> {
+    let template = IndexView { ctx };
 
     Ok(RawHtml(template.render()?))
 }

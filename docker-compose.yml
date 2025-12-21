@@ -5,6 +5,9 @@ services:
       - "127.0.0.1:6767:6767"
     environment:
       ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
+      ATLAS_OIDC_ISSUER_URL: http://nyckeln:7003
+      ATLAS_OIDC_CLIENT_ID: client-id
+      ATLAS_OIDC_CLIENT_SECRET: client-secret
     develop:
       watch:
         - path: ./src
@@ -35,6 +38,71 @@ services:
       interval: 2s
       timeout: 2s
       retries: 3
+  nyckeln:
+    build: ../nyckeln-under-dorrmattan
+    #image: ghcr.io/datasektionen/nyckeln-under-dorrmattan
+    configs:
+      - source: nyckeln.yaml
+        target: /config.yaml
+    ports:
+      - 7001:7001
+      - 7002:7002
+      - 7003:7003
+      - 7004:7004
+
+configs:
+  nyckeln.yaml:
+    content: |
+      clients:
+        - id: "client-id" # use this in your oidc client
+          secret: "client-secret" # use this in your oidc client
+          allows_guests: false
+          redirect_uris: # URIs of your oidc client
+            - http://localhost:6767/auth/oidc-callback
+
+      users:
+        - ug_kth_id: some-id
+          kth_id: turetek
+          email: turetek@kth.se
+          first_name: Ture
+          family_name: Teknolog
+          picture: https://thskth.se/wp-content/uploads/2023/06/ths-logo-bla-01-300x294-1.png
+          thumbnail: https://thskth.se/wp-content/uploads/2019/12/ths-logo-svart-01.png
+          pls_permissions:
+            sso:
+              - admin
+            calypso:
+              - drek
+              - dfunk
+          hive_tags:
+            - id: personal_email
+              content: turetek@gmail.com
+
+      hive:
+        tokens:
+          - secret: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+            permissions:
+              - id: admin
+                scope: null
+        groups:
+          - name: Systemansvarig
+            id: d-sys
+            domain: example.com
+            members:
+              - turetek
+            tags:
+              - id: author-pseudonym
+                content: D-Sys
+              - id: mandate
+            permissions:
+              - id: admin
+                scope: null
+
+      ldap:
+        - ug_kth_id: some-other-id
+          kth_id: marmas
+          first_name: Markus
+          family_name: Maskinare
 
 volumes:
   atlas-db-data:

@@ -9,8 +9,13 @@
         window.methone_conf = {
             system_name: "atlas",
             color_scheme: "pink",
+            {% if let Some(user) = ctx.user %}
+            login_text: "{{ user.display_name() }}",
+            login_href: "/",
+            {% else %}
             login_text: "Logga in",
             login_href: "/auth/login",
+            {% endif %}
             links: [
                 //{
                 //    str: "Text",
@@ -24,7 +29,7 @@
 <body>
     <div id="methone-container-replace"></div>
     <div id="application">
-        <p>Hello, {{ name }}!</p>
+        <p>Hello, world!</p>
     </div>
 </body>
 </html>

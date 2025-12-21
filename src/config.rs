@@ -12,7 +12,7 @@ use figment::{
 };
 use serde::Deserialize;
 
-use crate::logging::Verbosity;
+use crate::{auth::oidc::OidcConfig, logging::Verbosity};
 use log::*;
 
 #[derive(Deserialize, Debug)]
@@ -29,9 +29,12 @@ pub struct Config {
     #[serde(default = "defaults::log_file")]
     pub log_file: PathBuf,
 
-    pub bruh: String,
-
+    // No defaults
     pub db_url: String,
+    pub secret_key: String,
+    pub oidc_issuer_url: String,
+    pub oidc_client_id: String,
+    pub oidc_client_secret: String,
 }
 
 impl Config {
@@ -53,13 +56,32 @@ impl Config {
     }
 
     pub fn get_rocket_config(&self) -> rocket::Config {
+        let secret_key =
+            hex::decode(&self.secret_key).expect("Fatal error: secret key is invalid hex sequence");
+
+        if secret_key.len() != 64 {
+            panic!(
+                "Fatal error: secret key has incorrect length. Use, e.g., `openssl rand -hex 64` \
+                 to generate"
+            )
+        }
+
         let ident = rocket::config::Ident::try_new("atlas").unwrap();
 
         rocket::Config {
             address: self.listen_addr,
             port: self.port,
+            secret_key: rocket::config::SecretKey::from(&secret_key),
             ident,
             ..Default::default()
+        }
+    }
+
+    pub fn get_oidc_config(&self) -> OidcConfig {
+        OidcConfig {
+            issuer_url: self.oidc_issuer_url.clone(),
+            client_id: self.oidc_client_id.clone(),
+            client_secret: self.oidc_client_secret.clone(),
         }
     }
 }

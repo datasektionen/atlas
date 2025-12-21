@@ -1,8 +1,11 @@
+use auth::oidc::OidcClient;
 use log::*;
 use sqlx::PgPool;
 
+mod auth;
 mod config;
 mod errors;
+mod guards;
 mod logging;
 mod routing;
 mod web;
@@ -19,8 +22,15 @@ async fn rocket() -> _ {
         .await
         .expect("Failed to connect to database");
 
+    debug!("Initialized database connection pool");
+
+    let oidc_client = OidcClient::new(config.get_oidc_config())
+        .await
+        .expect("Failed to initialize OIDC");
+
     rocket::custom(config.get_rocket_config())
         .manage(db)
         .manage(config)
+        .manage(oidc_client)
         .mount("/", &web::tree())
 }
