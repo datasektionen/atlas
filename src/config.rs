@@ -1,13 +1,19 @@
 use std::{net::IpAddr, path::PathBuf};
 
+use rocket::{
+    Request,
+    http::Status,
+    request::{FromRequest, Outcome},
+};
+
 use figment::{
     Figment,
     providers::{Env, Format, Toml},
 };
-
 use serde::Deserialize;
 
 use crate::logging::Verbosity;
+use log::*;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
@@ -54,6 +60,21 @@ impl Config {
             port: self.port,
             ident,
             ..Default::default()
+        }
+    }
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for &'r Config {
+    type Error = ();
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        match req.rocket().state::<Config>() {
+            Some(config) => Outcome::Success(config),
+            None => {
+                error!("trying to retrieve config as rocket state without managing it");
+                Outcome::Error((Status::InternalServerError, ()))
+            }
         }
     }
 }

@@ -1,7 +1,30 @@
+<!DOCTYPE html>
 <html>
-
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://aurora.datasektionen.se" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <script type="text/javascript">
+        window.methone_conf = {
+            system_name: "atlas",
+            color_scheme: "pink",
+            login_text: "Logga in",
+            login_href: "/auth/login",
+            links: [
+                //{
+                //    str: "Text",
+                //    href: "/"
+                //},
+            ]
+         }
+    </script>
+    <script async src="https://methone.datasektionen.se/bar.js"></script>
+</head>
 <body>
-    <p>Hello, {{ name }}!</p>
+    <div id="methone-container-replace"></div>
+    <div id="application">
+        <p>Hello, {{ name }}!</p>
+    </div>
 </body>
-
 </html>

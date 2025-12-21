@@ -9,6 +9,8 @@ services:
       watch:
         - path: ./src
           action: rebuild
+        - path: ./templates
+          action: rebuild
         - path: ./Cargo.*
           action: rebuild
         - path: ./atlas.toml

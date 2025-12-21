@@ -1,5 +1,5 @@
 use askama::Template;
-use rocket::{State, response::content::RawHtml};
+use rocket::response::content::RawHtml;
 
 use crate::{config::Config, errors::AppResult, routing::RouteTree};
 
@@ -16,7 +16,7 @@ struct IndexView<'a> {
 }
 
 #[rocket::get("/")]
-fn index(config: &State<Config>) -> AppResult<RenderedTemplate> {
+fn index(config: &Config) -> AppResult<RenderedTemplate> {
     let template = IndexView { name: &config.bruh };
 
     Ok(RawHtml(template.render()?))
