@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="{{ ctx.lang }}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        {%- block full_title -%}
+        {%- block title -%}{%- endblock title -%} | Atlas
+        {%- endblock full_title -%}
+    </title>
+
+    <link rel="stylesheet" href="https://aurora.datasektionen.se" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+
+    <script type="text/javascript">
+        window.methone_conf = {
+            system_name: "atlas",
+            color_scheme: "pink",
+            {% if let Some(user) = ctx.user %}
+            login_text: "{{ ctx.t("nav.logout") }}",
+            login_href: "/auth/logout",
+            {% else %}
+            login_text: "{{ ctx.t("nav.login") }}",
+            {# TODO: redirect back to current page? #}
+            login_href: "/auth/login",
+            {% endif %}
+            links: [
+                {# TODO: customizable nav based on permissions #}
+                {
+                    str: "{{ ctx.t("nav.page.subscribe") }}",
+                    href: "/subscribe"
+                },
+            ]
+         }
+    </script>
+    <script async src="https://methone.datasektionen.se/bar.js"></script>
+    <script src="/static/main.js"></script>
+</head>
+<body>
+    <div id="methone-container-replace"></div>
+
+    <div id="application" class="pink">
+        <header>
+            <div class="header-inner">
+                <div class="row">
+                    <div class="header-left col-md-2">
+                        <a href="javascript:switch_lang('{{ ctx.lang.other() }}')" title="{{ ctx.t("header.lang.switch") }}">
+                            <span class="material-icons">language</span>
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <h2>{%- block heading -%}Tom sida{%- endblock heading -%}</h2>
+                    </div>
+                    <div class="header-right col-md-2">
+                        {%- block header_action -%}
+                        {%- endblock header_action -%}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="content">
+            {%- block content -%}
+            {%- endblock content -%}
+        </main>
+    </div>
+
+    <footer class="footer-toolbar">
+        <div class="footer-toolbar-inner row">
+            {%- block full_footer -%}
+            <div class="footer-toolbar-info col-md-6">
+                {%- block footer_info -%}
+                {%- endblock footer_info -%}
+            </div>
+            <div class="footer-toolbar-action-buttons col-md-6">
+                {%- block footer_actions -%}
+                {%- endblock footer_actions -%}
+            </div>
+            {%- endblock full_footer -%}
+        </div>
+    </footer>
+</body>
+</html>

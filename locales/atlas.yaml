@@ -19,7 +19,7 @@ footer.github:
   sv: Se koden på GitHub
   en: See the code on GitHub
 footer.madeby:
-  sv: Skriven med ❤️ av <a href="https://emmaa.se/">Emma Ericsson</a>
+  sv: Skrivet med ❤️ av <a href="https://emmaa.se/">Emma Ericsson</a>
   en: Written with ❤️ by <a href="https://emmaa.se/">Emma Ericsson</a>
 index.heading:
   sv: Atlas
@@ -43,3 +43,13 @@ index.description:
     Mattermost through an <a href="/api">API</a> or RSS-feed, as well as an
     iCal-feed for events. To subscribe to the news yourself, go to the <a
     href="/subscribe">"Subscribe" page</a> and customize your feed.
+subscribe.heading:
+  sv: Prenumerera
+  en: Subscribe
+subscribe.description:
+  sv: >
+    Testsida. Kommer nog hamna under index i slutändan, men jag ville testa
+    att ha flera sidor nu.
+  en: >
+    Test page. Will probably be placed in index eventually, but I wanted to
+    test having multiple pages now.

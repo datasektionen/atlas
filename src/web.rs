@@ -9,7 +9,10 @@ mod auth;
 type RenderedTemplate = RawHtml<String>;
 
 pub fn tree() -> RouteTree {
-    RouteTree::Branch(vec![auth::routes(), rocket::routes![index].into()])
+    RouteTree::Branch(vec![
+        auth::routes(),
+        rocket::routes![index, subscribe].into(),
+    ])
 }
 
 #[derive(Template)]
@@ -25,6 +28,19 @@ fn index(ctx: PageContext) -> AppResult<RenderedTemplate> {
     }
 
     let template = IndexView { ctx };
+
+    Ok(RawHtml(template.render()?))
+}
+
+#[derive(Template)]
+#[template(path = "subscribe.html.j2")]
+struct SubscribeView {
+    ctx: PageContext,
+}
+
+#[rocket::get("/subscribe")]
+fn subscribe(ctx: PageContext) -> AppResult<RenderedTemplate> {
+    let template = SubscribeView { ctx };
 
     Ok(RawHtml(template.render()?))
 }

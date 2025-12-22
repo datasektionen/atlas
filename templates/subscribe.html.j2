@@ -1,0 +1,15 @@
+{% extends "base.html.j2" %}
+
+{% block title %}{{ ctx.t("subscribe.heading") }}{% endblock title %}
+
+{% block heading %}{{ ctx.t("subscribe.heading") }}{% endblock heading %}
+
+{% block content %}
+<h1>{{ ctx.t("subscribe.heading") }}</h1>
+
+<p>{{ ctx.t("subscribe.description")|safe }}</p>
+{% endblock content %}
+
+{% block full_footer %}
+{% include "default_footer.html.j2" %}
+{% endblock full_footer %}
