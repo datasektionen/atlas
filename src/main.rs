@@ -9,6 +9,7 @@ mod errors;
 mod guards;
 mod logging;
 mod routing;
+mod splash;
 mod web;
 
 rust_i18n::i18n!("./locales");
@@ -27,7 +28,7 @@ async fn rocket() -> _ {
 
     debug!("Initialized database connection pool");
 
-    debug!(
+    info!(
         "Available i18n locales: {:?}",
         rust_i18n::available_locales!()
     );
@@ -36,10 +37,17 @@ async fn rocket() -> _ {
         .await
         .expect("Failed to initialize OIDC");
 
+    debug!("Initialized OIDC client");
+
+    let splashes = splash::Splashes::new("./splash.txt");
+
+    debug!("Initialized splashes");
+
     rocket::custom(config.get_rocket_config())
         .manage(db)
         .manage(config)
         .manage(oidc_client)
+        .manage(splashes)
         .mount("/static", FileServer::from("./static"))
         .mount("/", &web::tree())
 }

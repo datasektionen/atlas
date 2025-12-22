@@ -42,6 +42,7 @@ USER ${USER}
 WORKDIR /atlas
 COPY --from=build /atlas/atlas .
 COPY ./atlas.toml /atlas/atlas.toml
+COPY ./splash.txt /atlas/splash.txt
 COPY ./static /atlas/static
 
 EXPOSE ${ATLAS_PORT:-6767}

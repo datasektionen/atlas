@@ -34,12 +34,12 @@ index.description:
     href="https://datasektionen.se/">datasektionen.se</a> (vår officiella
     informationskanal), Discord och Mattermost via en <a href="/api">API</a>
     eller RSS samt ett iCal-flöde för alla event. För att prenumerera på
-    flödena till din egen RSS-läsare eller kalender gå till
-    <a href="/subscribe">"Prenumerera"-sidan</a>.
+    nyheterna till din egen RSS-läsare eller kalender gå till <a
+    href="/subscribe">"Prenumerera"-sidan</a> och skräddarsy ditt flöde.
   en: >
     <strong>Atlas</strong> is the official news-and-event-management system of
     the Computer Science Chapter. Everything published here will spread to <a
     href="https://datasektionen.se/">datasektionen.se</a>, Discord and
     Mattermost through an <a href="/api">API</a> or RSS-feed, as well as an
-    iCal-feed for events. To subscribe to the feeds yourself, go to the
-    <a href="/subscribe">"Subscribe" page</a>.
+    iCal-feed for events. To subscribe to the news yourself, go to the <a
+    href="/subscribe">"Subscribe" page</a> and customize your feed.

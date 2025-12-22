@@ -24,6 +24,9 @@ services:
         - path: ./atlas.toml
           action: sync+restart
           target: /atlas/atlas.toml
+        - path: ./splash.txt
+          action: sync+restart
+          target: /atlas/splash.txt
     depends_on:
       db:
         condition: service_healthy
