@@ -1,0 +1,45 @@
+_version: 2
+
+nav.login:
+  sv: Logga in
+  en: Log in
+nav.logout:
+  sv: Logga ut
+  en: Log out
+nav.page.subscribe:
+  sv: Prenumerera
+  en: Subscribe
+header.lang.switch:
+  sv: Byt språk
+  en: Switch language
+header.new:
+  sv: Skapa nyhet
+  en: Create post
+footer.github:
+  sv: Se koden på GitHub
+  en: See the code on GitHub
+footer.madeby:
+  sv: Skriven med ❤️ av <a href="https://emmaa.se/">Emma Ericsson</a>
+  en: Written with ❤️ by <a href="https://emmaa.se/">Emma Ericsson</a>
+index.heading:
+  sv: Atlas
+  en: Atlas
+index.heading.inner:
+  sv: Välkommen!
+  en: Welcome!
+index.description:
+  sv: >
+    <strong>Atlas</strong> är datasektionens centrala nyhet- och eventsystem.
+    Allt som publiceras här skickas vidare till <a
+    href="https://datasektionen.se/">datasektionen.se</a> (vår officiella
+    informationskanal), Discord och Mattermost via en <a href="/api">API</a>
+    eller RSS samt ett iCal-flöde för alla event. För att prenumerera på
+    flödena till din egen RSS-läsare eller kalender gå till
+    <a href="/subscribe">"Prenumerera"-sidan</a>.
+  en: >
+    <strong>Atlas</strong> is the official news-and-event-management system of
+    the Computer Science Chapter. Everything published here will spread to <a
+    href="https://datasektionen.se/">datasektionen.se</a>, Discord and
+    Mattermost through an <a href="/api">API</a> or RSS-feed, as well as an
+    iCal-feed for events. To subscribe to the feeds yourself, go to the
+    <a href="/subscribe">"Subscribe" page</a>.

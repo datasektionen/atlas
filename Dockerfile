@@ -12,6 +12,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=bind,source=./Cargo.lock,target=./Cargo.lock \
     --mount=type=bind,source=./src,target=./src \
     --mount=type=bind,source=./templates,target=./templates \
+    --mount=type=bind,source=./locales,target=./locales \
     \
     cargo build --locked --release \
     && cp ./target/release/atlas .
@@ -41,6 +42,7 @@ USER ${USER}
 WORKDIR /atlas
 COPY --from=build /atlas/atlas .
 COPY ./atlas.toml /atlas/atlas.toml
+COPY ./static /atlas/static
 
 EXPOSE ${ATLAS_PORT:-6767}
 

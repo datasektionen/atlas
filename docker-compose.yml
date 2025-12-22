@@ -14,8 +14,13 @@ services:
           action: rebuild
         - path: ./templates
           action: rebuild
+        - path: ./locales
+          action: rebuild
         - path: ./Cargo.*
           action: rebuild
+        - path: ./static
+          action: sync
+          target: /atlas/static
         - path: ./atlas.toml
           action: sync+restart
           target: /atlas/atlas.toml

@@ -1,5 +1,6 @@
 use auth::oidc::OidcClient;
 use log::*;
+use rocket::fs::FileServer;
 use sqlx::PgPool;
 
 mod auth;
@@ -9,6 +10,8 @@ mod guards;
 mod logging;
 mod routing;
 mod web;
+
+rust_i18n::i18n!("./locales");
 
 #[rocket::launch]
 async fn rocket() -> _ {
@@ -24,6 +27,11 @@ async fn rocket() -> _ {
 
     debug!("Initialized database connection pool");
 
+    debug!(
+        "Available i18n locales: {:?}",
+        rust_i18n::available_locales!()
+    );
+
     let oidc_client = OidcClient::new(config.get_oidc_config())
         .await
         .expect("Failed to initialize OIDC");
@@ -32,5 +40,6 @@ async fn rocket() -> _ {
         .manage(db)
         .manage(config)
         .manage(oidc_client)
+        .mount("/static", FileServer::from("./static"))
         .mount("/", &web::tree())
 }

@@ -1,48 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ ctx.lang }}">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Atlas</title>
+
     <link rel="stylesheet" href="https://aurora.datasektionen.se" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" />
+    <link rel="stylesheet" href="/static/styles.css" />
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+
     <script type="text/javascript">
         window.methone_conf = {
             system_name: "atlas",
             color_scheme: "pink",
             {% if let Some(user) = ctx.user %}
-            login_text: "{{ user.display_name() }}",
-            login_href: "/",
+            login_text: "{{ ctx.t("nav.logout") }}",
+            login_href: "/auth/logout",
             {% else %}
-            login_text: "Logga in",
+            login_text: "{{ ctx.t("nav.login") }}",
             login_href: "/auth/login",
             {% endif %}
             links: [
-                //{
-                //    str: "Text",
-                //    href: "/"
-                //},
+                {
+                    str: "{{ ctx.t("nav.page.subscribe") }}",
+                    href: "/subscribe"
+                },
             ]
          }
     </script>
     <script async src="https://methone.datasektionen.se/bar.js"></script>
+    <script src="/static/main.js"></script>
 </head>
 <body>
     <div id="methone-container-replace"></div>
-    <div id="application">
-        <p>Hello, world!</p>
-        {% if let Some(user) = ctx.user %}
-        <p>Permissions for {{ user.username() }}:</p>
-        <ul>
-            {% for (id, scope) in user.permissions() %}
-            <li>
-                {{ id }}
-                {% if let Some(scope) = scope %}
-                :{{ scope }}
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+
+    <div id="application" class="pink">
+        <header>
+            <div class="header-inner">
+                <div class="row">
+                    <div class="header-left col-md-2">
+                        <a href="javascript:switch_lang('{{ ctx.lang.other() }}')" title="{{ ctx.t("header.lang.switch") }}">
+                            <span class="material-icons">language</span>
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <h2>{{ ctx.t("index.heading") }}</h2>
+                    </div>
+                    <div class="header-right col-md-2">
+                        <a class="primary-action" href="#">{{ ctx.t("header.new") }}</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="content">
+            <h1>{{ ctx.t("index.heading.inner") }}</h1>
+
+            <p>{{ ctx.t("index.description")|safe }}</p>
+        </main>
     </div>
+
+    <footer class="footer-toolbar">
+        <div class="footer-toolbar-inner">
+            <div class="col-md-3">
+                <a href="https://github.com/datasektionen/atlas">
+                    {{ ctx.t("footer.github") }}
+                    <span class="material-icons">code</span>
+                </a>
+            </div>
+            <div class="col-md-6 text-center">
+                © 2025 Konglig Datasektionen
+            </div>
+            <div class="col-md-3 text-right">
+                {{ ctx.t("footer.madeby")|safe }}
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
