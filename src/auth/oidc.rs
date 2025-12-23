@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::collections::HashSet;
 
 use log::*;
 use openidconnect::{
@@ -78,7 +79,7 @@ pub type OidcIdTokenFields = IdTokenFields<
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize)]
 pub struct OidcAdditionalClaims {
-    permissions: Vec<HivePermission>,
+    permissions: HashSet<HivePermission>,
 }
 
 impl AdditionalClaims for OidcAdditionalClaims {}
@@ -212,6 +213,8 @@ impl OidcClient {
         let session = Session {
             username: claims.subject().to_string(),
             display_name: end_user_name.to_string(),
+            // I don't know enough Rust to get rid of this clone sadly... At least users don't tend
+            // to have too many permissions for a given system.
             permissions: additional_claims.permissions.clone().into(),
             expiration: claims.expiration().into(),
         };

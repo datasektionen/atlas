@@ -105,6 +105,10 @@ configs:
             permissions:
               - id: admin
                 scope: null
+              - id: manage-tags
+                scope: null
+              - id: use-tag
+                scope: "*"
 
       ldap:
         - ug_kth_id: some-other-id
