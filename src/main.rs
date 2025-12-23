@@ -1,10 +1,12 @@
 use auth::oidc::OidcClient;
+use errors::ErrorPageGenerator;
 use log::*;
 use rocket::fs::FileServer;
 use sqlx::PgPool;
 
 mod auth;
 mod config;
+mod dto;
 mod errors;
 mod guards;
 mod logging;
@@ -48,6 +50,7 @@ async fn rocket() -> _ {
         .manage(config)
         .manage(oidc_client)
         .manage(splashes)
+        .attach(ErrorPageGenerator)
         .mount("/", &web::tree())
         .mount("/static", FileServer::from("./static"))
         .register("/", web::catchers())

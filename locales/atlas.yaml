@@ -3,9 +3,6 @@ _version: 2
 control.back:
   sv: Tillbaka
   en: Back
-errors.heading.inner:
-  sv: Hoppsan!
-  en: Whoops!
 errors.caught.not-found.title:
   sv: Sidan hittades inte
   en: Page Not Found
@@ -26,6 +23,40 @@ errors.caught.unknown.description:
   en: >
     An unknown error has occured! If the error persists, please contact an
     administrator.
+errors.dto.pipeline.title:
+  sv: Pipelinefel
+  en: Pipeline Error
+errors.dto.pipeline.description:
+  sv: >
+    Ett fel inträffade vid hantering av din förfrågan. Försök igen senare
+    eller kontakta en administratör om felet kvarstår.
+  en: >
+    An error occured while processing your request. Try again later or
+    contact an administrator if the error persists.
+errors.dto.forbidden.title:
+  sv: Inte tillåtet
+  en: Not Allowed
+errors.dto.forbidden.description:
+  sv: >
+    Du saknar de nödvändiga behörigheterna för att utföra denna åtgärd.
+  en: >
+    You lack the necessary permissions to perform this action.
+errors.dto.auth.login.flow.expired.title:
+  sv: Autentiseringstiden har löpt ut
+  en: Authentication Flow Expired
+errors.dto.auth.login.flow.expired.description:
+  sv: >
+    Det har gått för lång tid sedan du startade detta inloggningsförsök och
+    det kan inte längre slutföras. Försök igen.
+  en: >
+    Too much time has passed since you started this login attempt and it can
+    no longer be completed. Please try again.
+errors.code:
+  sv: "kod: %{x}"
+  en: "code: %{x}"
+errors.heading:
+  sv: Hoppsan!
+  en: Whoops!
 footer.github:
   sv: Se koden på GitHub
   en: See the code on GitHub

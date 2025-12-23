@@ -4,12 +4,15 @@ use askama::Template;
 use log::*;
 use rocket::{
     Request, Response,
-    http::Status,
+    fairing::{self, Fairing},
+    http::{ContentType, Status},
     response::{self, Responder},
+    serde::json::Json,
 };
 
 use crate::{
     auth::{hive::HivePermission, oidc::OidcAuthenticationError},
+    dto::errors::AppErrorDto,
     guards::context::PageContext,
 };
 
@@ -19,6 +22,7 @@ pub type AppResult<T> = Result<T, AppError>;
 pub enum AppError {
     #[error("template render error: {0}")]
     RenderError(#[from] askama::Error),
+
     // not for login failures! just 500
     #[error("internal OIDC authentication error: {0}")]
     OidcAuthenticationError(#[from] OidcAuthenticationError),
@@ -26,12 +30,16 @@ pub enum AppError {
     StateSerializationError(#[source] serde_json::Error),
     #[error("failed to deserialize internal state from secure storage: {0}")]
     StateDeserializationError(#[source] serde_json::Error),
+    #[error("authentication flow expired and can no longer be completed")]
+    AuthenticationFlowExpired,
+
     #[error("user lacks permissions to perform action (minimum needed: {0})")]
     NotAllowed(HivePermission),
     #[error("user was not authenticated when required")]
     NotAuthenticated,
-    #[error("authentication flow expired and can no longer be completed")]
-    AuthenticationFlowExpired,
+
+    #[error("failed to decode error while generating error page")]
+    ErrorDecodeFailure,
 }
 
 impl AppError {
@@ -41,9 +49,10 @@ impl AppError {
             Self::OidcAuthenticationError(..) => Status::InternalServerError,
             Self::StateSerializationError(..) => Status::InternalServerError,
             Self::StateDeserializationError(..) => Status::InternalServerError,
-            Self::NotAllowed(..) => Status::Forbidden,
-            Self::NotAuthenticated => Status::Unauthorized,
             Self::AuthenticationFlowExpired => Status::Gone,
+            Self::NotAllowed(..) => Status::Forbidden,
+            Self::NotAuthenticated => Status::Forbidden,
+            Self::ErrorDecodeFailure => Status::InternalServerError,
         }
     }
 }
@@ -57,12 +66,9 @@ impl<'r> Responder<'r, 'static> for AppError {
             debug!("While handling [{req}], encountered {self:?}: {self}");
         }
 
-        // TODO: return error information using JSON
-        let body = "An error occured";
-        Ok(Response::build()
-            .sized_body(body.len(), Cursor::new(body))
-            .status(status)
-            .finalize())
+        let base = Json(AppErrorDto::from(self)).respond_to(req)?;
+
+        Ok(Response::build_from(base).status(status).finalize())
     }
 }
 
@@ -70,8 +76,60 @@ impl<'r> Responder<'r, 'static> for AppError {
 #[template(path = "errors/error.html.j2")]
 struct ErrorPageView {
     ctx: PageContext,
+    status: u16,
     title: String,
     description: String,
+}
+
+// Generates error pages for AppErrors, as the Responder trait does not allow async and can
+// therefore not render an HTML page with PageContext. It instead generates a JSON response which
+// gets intercepted by this fairing and, when relevant, renders it as a full page.
+pub struct ErrorPageGenerator;
+
+#[rocket::async_trait]
+impl Fairing for ErrorPageGenerator {
+    fn info(&self) -> fairing::Info {
+        fairing::Info {
+            name: "Error Page Generator",
+            kind: fairing::Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, req: &'r Request<'_>, res: &mut Response<'r>) {
+        let status_class = res.status().class();
+        if !status_class.is_client_error() && !status_class.is_server_error() {
+            // Ignore non-errors
+            return;
+        }
+
+        if req.uri().path().starts_with("/api/") {
+            // API errors should be in JSON format
+            return;
+        }
+
+        if res.content_type().map(|t| t.is_html()).unwrap_or(false) {
+            // Already rendered! Probably by a catcher.
+            return;
+        }
+
+        let mut error = AppErrorDto::from(AppError::ErrorDecodeFailure);
+
+        if let Ok(body) = res.body_mut().to_string().await {
+            if let Ok(dto) = serde_json::from_str(&body) {
+                error = dto;
+            }
+        }
+
+        let ctx = req.guard::<PageContext>().await.expect("infallible");
+
+        let title = error.title(&ctx.lang);
+        let description = error.description(&ctx.lang);
+
+        res.set_header(ContentType::HTML);
+
+        let html = render_error_page(title, description, res.status(), ctx);
+        res.set_sized_body(html.len(), Cursor::new(html));
+    }
 }
 
 pub fn render_error_page<T, D>(title: T, description: D, status: Status, ctx: PageContext) -> String
@@ -84,6 +142,7 @@ where
 
     let template = ErrorPageView {
         ctx,
+        status: status.code,
         title,
         description,
     };
