@@ -2,6 +2,8 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize, de, ser::SerializeMap};
 
+use crate::errors::{AppError, AppResult};
+
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone, Default)]
 pub struct HivePermissionSet {
     set: HashSet<HivePermission>,
@@ -14,8 +16,13 @@ impl From<HashSet<HivePermission>> for HivePermissionSet {
 }
 
 impl HivePermissionSet {
-    pub fn has(&self, perm: &HivePermission) -> bool {
-        self.set.contains(perm)
+    pub fn require(&self, min: HivePermission) -> AppResult<()> {
+        // TODO: handle scopes using partial ordering
+        if self.set.contains(&min) {
+            Ok(())
+        } else {
+            Err(AppError::NotAllowed(min))
+        }
     }
 }
 
@@ -35,6 +42,18 @@ pub enum HivePermission {
     Unknown,
 }
 
+impl std::fmt::Display for HivePermission {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let key = self.key();
+
+        match self {
+            Self::Post | Self::ManageTags | Self::Unknown => write!(f, "$atlas:{key}"),
+
+            Self::UseTag(scope) => write!(f, "$atlas:{key}:{scope}"),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Hash, Debug)]
 #[serde(from = "String")]
 pub enum TagScope {
@@ -52,11 +71,11 @@ impl From<String> for TagScope {
     }
 }
 
-impl From<&TagScope> for String {
-    fn from(scope: &TagScope) -> Self {
-        match scope {
-            TagScope::Wildcard => "*".to_string(),
-            TagScope::Tag(s) => s.clone(),
+impl std::fmt::Display for TagScope {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            TagScope::Wildcard => f.write_str("*"),
+            TagScope::Tag(s) => write!(f, "{s}"),
         }
     }
 }
@@ -75,7 +94,7 @@ impl HivePermission {
 
     pub fn scope(&self) -> Option<String> {
         match self {
-            Self::UseTag(scope) => Some(scope.into()),
+            Self::UseTag(scope) => Some(scope.to_string()),
             _ => None,
         }
     }

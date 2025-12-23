@@ -101,6 +101,8 @@ configs:
                 scope: null
               - id: use-tag
                 scope: "*"
+              - id: post
+                scope: null
           - name: Testgrupp
             id: test
             domain: ddagen.se

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
         {%- block full_title -%}
-        {%- block title -%}{%- endblock title -%} | Atlas
+        {%- block title -%}{%- endblock title -%}&nbsp;| Atlas
         {%- endblock full_title -%}
     </title>
 
@@ -18,7 +18,7 @@
         window.methone_conf = {
             system_name: "atlas",
             color_scheme: "pink",
-            {% if let Some(user) = ctx.user %}
+            {% if ctx.user.is_some() %}
             login_text: "{{ ctx.t("nav.logout") }}",
             login_href: "/auth/logout",
             {% else %}

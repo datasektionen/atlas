@@ -1,26 +1,43 @@
 _version: 2
 
-nav.login:
-  sv: Logga in
-  en: Log in
-nav.logout:
-  sv: Logga ut
-  en: Log out
-nav.page.subscribe:
-  sv: Prenumerera
-  en: Subscribe
-header.lang.switch:
-  sv: Byt språk
-  en: Switch language
-header.new:
-  sv: Skapa nyhet
-  en: Create post
+control.back:
+  sv: Tillbaka
+  en: Back
+errors.heading.inner:
+  sv: Hoppsan!
+  en: Whoops!
+errors.caught.not-found.title:
+  sv: Sidan hittades inte
+  en: Page Not Found
+errors.caught.not-found.description:
+  sv: >
+    Den efterfrågade sidan hittades inte. Antingen finns den inte, eller så
+    saknar du behörighet att se den.
+  en: >
+    The requested page could not be found. Either it does not exist, or you
+    lack the permissions to view it.
+errors.caught.unknown.title:
+  sv: Okänt fel
+  en: Unknown Error
+errors.caught.unknown.description:
+  sv: >
+    Ett okänt fel inträffade! Om felet kvarstår, vänligen kontakta en
+    administratör.
+  en: >
+    An unknown error has occured! If the error persists, please contact an
+    administrator.
 footer.github:
   sv: Se koden på GitHub
   en: See the code on GitHub
 footer.madeby:
   sv: Skrivet med ❤️ av <a href="https://emmaa.se/">Emma Ericsson</a>
   en: Written with ❤️ by <a href="https://emmaa.se/">Emma Ericsson</a>
+header.lang.switch:
+  sv: Byt språk
+  en: Switch language
+header.new:
+  sv: Skapa nyhet
+  en: Create post
 index.heading:
   sv: Atlas
   en: Atlas
@@ -43,6 +60,15 @@ index.description:
     Mattermost through an <a href="/api">API</a> or RSS-feed, as well as an
     iCal-feed for events. To subscribe to the news yourself, go to the <a
     href="/subscribe">"Subscribe" page</a> and customize your feed.
+nav.login:
+  sv: Logga in
+  en: Log in
+nav.logout:
+  sv: Logga ut
+  en: Log out
+nav.page.subscribe:
+  sv: Prenumerera
+  en: Subscribe
 subscribe.heading:
   sv: Prenumerera
   en: Subscribe

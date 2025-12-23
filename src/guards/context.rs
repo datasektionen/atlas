@@ -7,7 +7,11 @@ use rocket::{
 
 use super::{lang::Language, user::User};
 
-use crate::splash::Splashes;
+use crate::{
+    auth::hive::HivePermissionSet,
+    errors::{AppError, AppResult},
+    splash::Splashes,
+};
 
 pub struct PageContext {
     pub user: Option<User>,
@@ -29,6 +33,15 @@ impl PageContext {
     // Shorthand to generate splash text
     pub fn splash(&self) -> &String {
         self.splashes.choose()
+    }
+
+    // Shorthand to get permission set
+    pub fn perms(&self) -> AppResult<&HivePermissionSet> {
+        if let Some(user) = &self.user {
+            Ok(user.permissions())
+        } else {
+            Err(AppError::NotAuthenticated)
+        }
     }
 }
 

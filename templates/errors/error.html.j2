@@ -1,0 +1,19 @@
+{% extends "base.html.j2" %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block heading %}{{ title }}{% endblock heading %}
+
+{% block header_action %}
+<a class="primary-action" href="/">{{ ctx.t("control.back") }}</a>
+{% endblock header_action %}
+
+{% block content %}
+<h1>{{ ctx.t("errors.heading.inner") }}</h1>
+
+<p>{{ description }}</p>
+{% endblock content %}
+
+{% block full_footer %}
+{% include "default_footer.html.j2" %}
+{% endblock full_footer %}

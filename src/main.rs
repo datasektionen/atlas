@@ -48,6 +48,7 @@ async fn rocket() -> _ {
         .manage(config)
         .manage(oidc_client)
         .manage(splashes)
-        .mount("/static", FileServer::from("./static"))
         .mount("/", &web::tree())
+        .mount("/static", FileServer::from("./static"))
+        .register("/", web::catchers())
 }

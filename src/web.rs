@@ -1,17 +1,21 @@
 use askama::Template;
+pub use catchers::catchers;
 use log::*;
 use rocket::response::content::RawHtml;
 
-use crate::{errors::AppResult, guards::context::PageContext, routing::RouteTree};
+use crate::{
+    auth::hive::HivePermission, errors::AppResult, guards::context::PageContext, routing::RouteTree,
+};
 
 mod auth;
+mod catchers;
 
 type RenderedTemplate = RawHtml<String>;
 
 pub fn tree() -> RouteTree {
     RouteTree::Branch(vec![
         auth::routes(),
-        rocket::routes![index, subscribe].into(),
+        rocket::routes![index, subscribe, post].into(),
     ])
 }
 
@@ -42,6 +46,15 @@ struct SubscribeView {
 #[rocket::get("/subscribe")]
 fn subscribe(ctx: PageContext) -> AppResult<RenderedTemplate> {
     let template = SubscribeView { ctx };
+
+    Ok(RawHtml(template.render()?))
+}
+
+#[rocket::get("/post")]
+fn post(ctx: PageContext) -> AppResult<RenderedTemplate> {
+    ctx.perms()?.require(HivePermission::Post)?;
+
+    let template = IndexView { ctx };
 
     Ok(RawHtml(template.render()?))
 }
