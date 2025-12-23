@@ -35,6 +35,8 @@ pub struct Config {
     pub oidc_issuer_url: String,
     pub oidc_client_id: String,
     pub oidc_client_secret: String,
+    pub hive_api_url: String,
+    pub hive_api_key: String,
 }
 
 impl Config {

@@ -4,7 +4,10 @@ use oidc::{OidcAuthenticationResult, OidcClient};
 use rocket::http::{Cookie, CookieJar, SameSite, uri::Origin};
 use serde::{Deserialize, Serialize};
 
-use crate::errors::{AppError, AppResult};
+use crate::{
+    config::Config,
+    errors::{AppError, AppResult},
+};
 
 pub mod hive;
 pub mod oidc;
@@ -18,6 +21,7 @@ pub struct Session {
     pub username: String,
     pub display_name: String,
     pub permissions: hive::HivePermissionSet,
+    pub groups: Vec<hive::HiveGroup>,
     pub expiration: DateTime<Local>,
 }
 
@@ -47,6 +51,7 @@ pub async fn finish_authentication(
     state: &str,
     oidc_client: &OidcClient,
     jar: &CookieJar<'_>,
+    config: &Config,
 ) -> AppResult<OidcAuthenticationResult<'static>> {
     let cookie = jar
         .get_private(LOGIN_FLOW_CONTEXT_COOKIE)
@@ -56,7 +61,7 @@ pub async fn finish_authentication(
         .map_err(AppError::StateDeserializationError)?;
 
     let result = oidc_client
-        .finish_authentication(context, code, state)
+        .finish_authentication(context, code, state, config)
         .await?;
 
     let session = &result.session;

@@ -22,6 +22,10 @@ impl User {
     pub fn permissions(&self) -> &auth::hive::HivePermissionSet {
         &self.0.permissions
     }
+
+    pub fn groups(&self) -> &Vec<auth::hive::HiveGroup> {
+        &self.0.groups
+    }
 }
 
 #[rocket::async_trait]

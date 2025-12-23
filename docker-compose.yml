@@ -5,6 +5,8 @@ services:
       - "127.0.0.1:6767:6767"
     environment:
       ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
+      ATLAS_HIVE_API_URL: http://nyckeln:7004/api/v1
+      ATLAS_HIVE_API_KEY: secret
       ATLAS_OIDC_ISSUER_URL: http://nyckeln:7003
       ATLAS_OIDC_CLIENT_ID: client-id
       ATLAS_OIDC_CLIENT_SECRET: client-secret
@@ -76,22 +78,16 @@ configs:
           family_name: Teknolog
           picture: https://thskth.se/wp-content/uploads/2023/06/ths-logo-bla-01-300x294-1.png
           thumbnail: https://thskth.se/wp-content/uploads/2019/12/ths-logo-svart-01.png
-          pls_permissions:
-            sso:
-              - admin
-            calypso:
-              - drek
-              - dfunk
-          hive_tags:
-            - id: personal_email
-              content: turetek@gmail.com
+        - ug_kth_id: some-id-2
+          kth_id: marmas
+          email: marmas@kth.se
+          first_name: Markus
+          family_name: Maskinare
+          picture: https://thskth.se/wp-content/uploads/2023/06/ths-logo-bla-01-300x294-1.png
+          thumbnail: https://thskth.se/wp-content/uploads/2019/12/ths-logo-svart-01.png
 
       hive:
         tokens:
-          - secret: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
-            permissions:
-              - id: admin
-                scope: null
         groups:
           - name: Systemansvarig
             id: d-sys
@@ -99,22 +95,20 @@ configs:
             members:
               - turetek
             tags:
-              - id: author-pseudonym
-                content: D-Sys
-              - id: mandate
+              - id: post-manager
             permissions:
-              - id: admin
-                scope: null
               - id: manage-tags
                 scope: null
               - id: use-tag
                 scope: "*"
-
-      ldap:
-        - ug_kth_id: some-other-id
-          kth_id: marmas
-          first_name: Markus
-          family_name: Maskinare
+          - name: Testgrupp
+            id: test
+            domain: ddagen.se
+            members:
+              - turetek
+              - marmas
+            tags:
+              - id: post-manager
 
 volumes:
   atlas-db-data:

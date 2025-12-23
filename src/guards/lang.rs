@@ -57,12 +57,10 @@ impl Language {
     }
 
     pub fn t<'a>(&self, key: &'a str) -> Cow<'a, str> {
-        log::debug!("Translated {key} into {}", self.i18n_locale());
         rust_i18n::t!(key, locale = self.i18n_locale())
     }
 
     pub fn t1<'a, T: fmt::Display>(&self, key: &'a str, x: T) -> Cow<'a, str> {
-        log::debug!("Translated {key} into {} using {x}", self.i18n_locale());
         rust_i18n::t!(key, locale = self.i18n_locale(), x = x)
     }
 }

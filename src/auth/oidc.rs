@@ -17,7 +17,12 @@ use openidconnect::{
 use rocket::http::uri::Origin;
 use serde::{Deserialize, Serialize};
 
-use super::{Session, hive::HivePermission};
+use super::{
+    Session,
+    hive::{HiveGroup, HivePermission},
+};
+
+use crate::config::Config;
 
 pub struct OidcConfig {
     pub issuer_url: String,
@@ -49,6 +54,9 @@ pub enum OidcAuthenticationError {
     BadIdToken(#[from] openidconnect::ClaimsVerificationError),
     #[error("OIDC issuer did not return any `name` claim for the subject")]
     NoNameClaim,
+    // Not related to OIDC, but it gets handled at the same time.
+    #[error("error getting memberships from Hive")]
+    HiveError,
 }
 
 type ReqwestError<'c> = <openidconnect::reqwest::Client as AsyncHttpClient<'c>>::Error;
@@ -179,6 +187,7 @@ impl OidcClient {
         context: OidcAuthenticationContext<'n>,
         code: &str,
         state: &str,
+        config: &Config,
     ) -> Result<OidcAuthenticationResult<'n>, OidcAuthenticationError> {
         if CsrfToken::new(state.to_owned()) != context.csrf_state {
             return Err(OidcAuthenticationError::BadCsrfToken(state.to_owned()));
@@ -210,12 +219,32 @@ impl OidcClient {
 
         let additional_claims = claims.additional_claims();
 
+        // Get all groups with the tag #atlas:post-manager that the user is a member of for use
+        // later. Not related to authentication, but it's easy to do at the same time.
+        let username = claims.subject().to_string();
+        let groups = self
+            .http_client
+            .get(format!(
+                "{}/tagged/post-manager/memberships/{}",
+                config.hive_api_url, username,
+            ))
+            .header("Authorization", format!("Bearer: {}", config.hive_api_key))
+            .send()
+            .await
+            .inspect_err(|e| error!("Hive connection error: {e:?}"))
+            .map_err(|_| OidcAuthenticationError::HiveError)?
+            .json::<Vec<HiveGroup>>()
+            .await
+            .inspect_err(|e| error!("Hive response error: {e:?}"))
+            .map_err(|_| OidcAuthenticationError::HiveError)?;
+
         let session = Session {
-            username: claims.subject().to_string(),
+            username,
             display_name: end_user_name.to_string(),
             // I don't know enough Rust to get rid of this clone sadly... At least users don't tend
             // to have too many permissions for a given system.
             permissions: additional_claims.permissions.clone().into(),
+            groups,
             expiration: claims.expiration().into(),
         };
 

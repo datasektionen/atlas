@@ -146,3 +146,13 @@ impl<'de> Deserialize<'de> for HivePermission {
     }
 }
 // End serde bullshit implementation
+
+#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
+pub struct HiveGroup {
+    #[serde(rename = "group_name")]
+    name: String,
+    #[serde(rename = "group_id")]
+    id: String,
+    #[serde(rename = "group_domain")]
+    domain: String,
+}

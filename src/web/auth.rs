@@ -12,6 +12,7 @@ use crate::{
         self,
         oidc::{OidcAuthenticationResult, OidcClient},
     },
+    config::Config,
     errors::AppResult,
     guards::scheme::RequestScheme,
     routing::RouteTree,
@@ -54,9 +55,10 @@ async fn oidc_callback(
     state: &str,
     oidc_client: &State<OidcClient>,
     jar: &CookieJar<'_>,
+    config: &Config,
 ) -> AppResult<Redirect> {
     let OidcAuthenticationResult { session: _, next } =
-        auth::finish_authentication(code, state, oidc_client, jar).await?;
+        auth::finish_authentication(code, state, oidc_client, jar, config).await?;
 
     let target = next.unwrap_or_else(|| Origin::parse("/").unwrap());
 

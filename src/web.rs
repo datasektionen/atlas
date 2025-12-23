@@ -25,6 +25,7 @@ struct IndexView {
 fn index(ctx: PageContext) -> AppResult<RenderedTemplate> {
     if let Some(ref user) = ctx.user {
         debug!("Permissions: {:?}", user.permissions());
+        debug!("Groups: {:?}", user.groups());
     }
 
     let template = IndexView { ctx };
