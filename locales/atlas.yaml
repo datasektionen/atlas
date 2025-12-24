@@ -3,6 +3,9 @@ _version: 2
 control.back:
   sv: Tillbaka
   en: Back
+control.new:
+  sv: Skapa ny
+  en: Create new
 errors.caught.not-found.title:
   sv: Sidan hittades inte
   en: Page Not Found
@@ -60,21 +63,18 @@ errors.heading:
 footer.github:
   sv: Se koden på GitHub
   en: See the code on GitHub
-footer.madeby:
+footer.attribution:
   sv: Skrivet med ❤️ av <a href="https://emmaa.se/">Emma Ericsson</a>
   en: Written with ❤️ by <a href="https://emmaa.se/">Emma Ericsson</a>
-header.lang.switch:
-  sv: Byt språk
-  en: Switch language
-header.new:
-  sv: Skapa nyhet
-  en: Create post
 index.heading:
   sv: Atlas
   en: Atlas
 index.heading.inner:
   sv: Välkommen!
   en: Welcome!
+index.heading.inner.user:
+  sv: Välkommen, %{x}!
+  en: Welcome, %{x}!
 index.description:
   sv: >
     <strong>Atlas</strong> är datasektionens centrala nyhet- och eventsystem.
@@ -97,9 +97,15 @@ nav.login:
 nav.logout:
   sv: Logga ut
   en: Log out
-nav.page.subscribe:
+nav.lang.switch:
+  sv: Byt språk
+  en: Switch language
+nav.link.subscribe:
   sv: Prenumerera
   en: Subscribe
+nav.link.post:
+  sv: Skapa inlägg
+  en: Create post
 subscribe.heading:
   sv: Prenumerera
   en: Subscribe

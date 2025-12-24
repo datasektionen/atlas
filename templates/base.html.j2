@@ -27,11 +27,12 @@
             login_href: "/auth/login",
             {% endif %}
             links: [
-                {# TODO: customizable nav based on permissions #}
+                {% for link in ctx.nav.links %}
                 {
-                    str: "{{ ctx.t("nav.page.subscribe") }}",
-                    href: "/subscribe"
+                    str: "{{ ctx.t(format!("nav.link.{}", link.key).as_str()) }}",
+                        href: "{{ link.href }}"
                 },
+                {% endfor %}
             ]
          }
     </script>
@@ -46,7 +47,7 @@
             <div class="header-inner">
                 <div class="row">
                     <div class="header-left col-md-2">
-                        <a href="javascript:switch_lang('{{ ctx.lang.other() }}')" title="{{ ctx.t("header.lang.switch") }}">
+                        <a href="javascript:switch_lang('{{ ctx.lang.other() }}')" title="{{ ctx.t("nav.lang.switch") }}">
                             <span class="material-icons">language</span>
                         </a>
                     </div>

@@ -16,9 +16,13 @@ impl From<HashSet<HivePermission>> for HivePermissionSet {
 }
 
 impl HivePermissionSet {
+    pub fn has(&self, min: &HivePermission) -> bool {
+        self.set.contains(min)
+    }
+
     pub fn require(&self, min: HivePermission) -> AppResult<()> {
         // TODO: handle scopes using partial ordering
-        if self.set.contains(&min) {
+        if self.has(&min) {
             Ok(())
         } else {
             Err(AppError::NotAllowed(min))

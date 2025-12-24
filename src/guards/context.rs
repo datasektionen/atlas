@@ -5,7 +5,7 @@ use rocket::{
     request::{FromRequest, Outcome},
 };
 
-use super::{lang::Language, user::User};
+use super::{lang::Language, nav::Nav, user::User};
 
 use crate::{
     auth::hive::HivePermissionSet,
@@ -17,6 +17,7 @@ pub struct PageContext {
     pub user: Option<User>,
     pub lang: Language,
     pub splashes: Splashes,
+    pub nav: Nav,
 }
 
 impl PageContext {
@@ -54,11 +55,13 @@ impl<'r> FromRequest<'r> for PageContext {
         let lang = req.guard::<Language>().await.unwrap();
         // Cloning an Arc is cheap
         let splashes = req.rocket().state::<Splashes>().unwrap().clone();
+        let nav = req.guard::<Nav>().await.unwrap();
 
         Outcome::Success(Self {
             user,
             lang,
             splashes,
+            nav,
         })
     }
 }

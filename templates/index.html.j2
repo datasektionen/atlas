@@ -5,11 +5,17 @@
 {% block heading %}{{ ctx.t("index.heading") }}{% endblock heading %}
 
 {% block header_action %}
-<a class="primary-action" href="#">{{ ctx.t("header.new") }}</a>
+<a class="primary-action" href="#">{{ ctx.t("control.new") }}</a>
 {% endblock header_action %}
 
 {% block content %}
-<h1>{{ ctx.t("index.heading.inner") }}</h1>
+<h1>
+    {% if let Some(user) = ctx.user %}
+    {{ ctx.t1("index.heading.inner.user", user.display_name()) }}
+    {% else %}
+    {{ ctx.t("index.heading.inner") }}
+    {% endif %}
+</h1>
 
 <p>{{ ctx.t("index.description")|safe }}</p>
 {% endblock content %}
