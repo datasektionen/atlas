@@ -30,6 +30,13 @@ async fn rocket() -> _ {
 
     debug!("Initialized database connection pool");
 
+    sqlx::migrate!("./migrations")
+        .run(&db)
+        .await
+        .expect("Failed to apply database migrations");
+
+    info!("Database migrations successfully applied");
+
     info!(
         "Available i18n locales: {:?}",
         rust_i18n::available_locales!()

@@ -4,6 +4,7 @@ services:
     ports:
       - "127.0.0.1:6767:6767"
     environment:
+      TZ: Europe/Stockholm
       ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
       ATLAS_HIVE_API_URL: http://nyckeln:7004/api/v1
       ATLAS_HIVE_API_KEY: secret
@@ -18,6 +19,8 @@ services:
         - path: ./templates
           action: rebuild
         - path: ./locales
+          action: rebuild
+        - path: ./migrations
           action: rebuild
         - path: ./Cargo.*
           action: rebuild

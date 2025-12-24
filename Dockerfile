@@ -13,6 +13,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=bind,source=./src,target=./src \
     --mount=type=bind,source=./templates,target=./templates \
     --mount=type=bind,source=./locales,target=./locales \
+    --mount=type=bind,source=./migrations,target=./migrations \
     \
     cargo build --locked --release \
     && cp ./target/release/atlas .
