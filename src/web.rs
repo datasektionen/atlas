@@ -44,8 +44,13 @@ struct SubscribeView {
 }
 
 #[rocket::get("/subscribe")]
-fn subscribe(ctx: PageContext) -> AppResult<RenderedTemplate> {
+fn subscribe(
+    ctx: PageContext,
+    darkmode: crate::guards::darkmode::Darkmode,
+) -> AppResult<RenderedTemplate> {
     let template = SubscribeView { ctx };
+
+    info!("darkmode: {}", darkmode.on());
 
     Ok(RawHtml(template.render()?))
 }

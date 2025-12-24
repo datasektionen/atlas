@@ -2,7 +2,6 @@ use std::{net::IpAddr, path::PathBuf};
 
 use rocket::{
     Request,
-    http::Status,
     request::{FromRequest, Outcome},
 };
 
@@ -13,7 +12,6 @@ use figment::{
 use serde::Deserialize;
 
 use crate::{auth::oidc::OidcConfig, logging::Verbosity};
-use log::*;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
@@ -37,6 +35,9 @@ pub struct Config {
     pub oidc_client_secret: String,
     pub hive_api_url: String,
     pub hive_api_key: String,
+    // Can also be the string "yes" or "no". Not "true" or "false", due to them being serialized to
+    // bools.
+    pub darkmode_url: String,
 }
 
 impl Config {
@@ -93,13 +94,12 @@ impl<'r> FromRequest<'r> for &'r Config {
     type Error = ();
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        match req.rocket().state::<Config>() {
-            Some(config) => Outcome::Success(config),
-            None => {
-                error!("trying to retrieve config as rocket state without managing it");
-                Outcome::Error((Status::InternalServerError, ()))
-            }
-        }
+        let config = req
+            .rocket()
+            .state::<Config>()
+            .expect("trying to retrieve config as rocket state without managing it");
+
+        Outcome::Success(config)
     }
 }
 

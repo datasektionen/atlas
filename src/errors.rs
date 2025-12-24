@@ -40,6 +40,8 @@ pub enum AppError {
 
     #[error("failed to decode error while generating error page")]
     ErrorDecodeFailure,
+    #[error("error while connecting to an external service")]
+    ExternalConnectionError,
 }
 
 impl AppError {
@@ -53,6 +55,7 @@ impl AppError {
             Self::NotAllowed(..) => Status::Forbidden,
             Self::NotAuthenticated => Status::Forbidden,
             Self::ErrorDecodeFailure => Status::InternalServerError,
+            Self::ExternalConnectionError => Status::InternalServerError,
         }
     }
 }

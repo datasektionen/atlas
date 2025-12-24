@@ -24,6 +24,7 @@ impl From<AppError> for InnerAppErrorDto {
             AppError::StateSerializationError(..) => Self::PipelineError,
             AppError::StateDeserializationError(..) => Self::PipelineError,
             AppError::ErrorDecodeFailure => Self::PipelineError,
+            AppError::ExternalConnectionError => Self::PipelineError,
             AppError::AuthenticationFlowExpired => Self::AuthenticationFlowExpired,
             AppError::NotAllowed(..) => Self::NotAllowed,
             AppError::NotAuthenticated => Self::NotAllowed,

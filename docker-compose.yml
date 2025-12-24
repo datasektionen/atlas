@@ -10,6 +10,7 @@ services:
       ATLAS_OIDC_ISSUER_URL: http://nyckeln:7003
       ATLAS_OIDC_CLIENT_ID: client-id
       ATLAS_OIDC_CLIENT_SECRET: client-secret
+      ATLAS_DARKMODE_URL: no
     develop:
       watch:
         - path: ./src
