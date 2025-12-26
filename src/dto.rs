@@ -6,7 +6,7 @@ use serde::Serialize;
 
 pub mod datetime;
 pub mod errors;
-pub mod post;
+pub mod posts;
 
 pub struct SubmitType(bool);
 

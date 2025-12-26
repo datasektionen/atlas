@@ -1,5 +1,5 @@
 use crate::{
-    dto::post::EditPostDto,
+    dto::posts::EditPostDto,
     errors::{AppError, AppResult},
     guards::user::User,
     models::{PostId, PostModel},

@@ -131,37 +131,37 @@ nav.link.subscribe:
 nav.link.post:
   sv: Skapa inlägg
   en: Create post
-post.heading:
+posts.edit.heading:
   sv: Redigera inlägg
   en: Edit post
-post.new.field.title-sv.placeholder:
+posts.edit.field.title-sv.placeholder:
   sv: Titel (svenska)
   en: Title (Swedish)
-post.new.field.title-en.placeholder:
+posts.edit.field.title-en.placeholder:
   sv: Titel (engelska)
   en: Title (English)
-post.new.field.content-sv.label:
+posts.edit.field.content-sv.label:
   sv: "Innehåll (svenska):"
   en: "Content (Swedish):"
-post.new.field.content-en.label:
+posts.edit.field.content-en.label:
   sv: "Innehåll (engelska):"
   en: "Content (English):"
-post.new.field.publish-time.label:
+posts.edit.field.publish-time.label:
   sv: "Publiceringstid:"
   en: "Publish time:"
-post.new.field.publish-time.tip:
+posts.edit.field.publish-time.tip:
   sv: Lämna blankt för direkt publicering
   en: Leave blank to publish instantly
-post.new.field.mandate.label:
+posts.edit.field.mandate.label:
   sv: "Publicera i egenskap av:"
   en: "Publish as:"
-post.new.field.mandate.yourself:
+posts.edit.field.mandate.yourself:
   sv: Dig själv
   en: Yourself
-post.new.field.darkmode-hide.label:
+posts.edit.field.darkmode-hide.label:
   sv: "Mörklägg:"
   en: "Darken:"
-post.new.field.darkmode-hide.tip:
+posts.edit.field.darkmode-hide.tip:
   sv: Dölj automatiskt under mottagningen
   en: Hide automatically during the reception
 subscribe.heading:

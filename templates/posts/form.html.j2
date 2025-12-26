@@ -17,23 +17,23 @@
 {% let title_en      = post.title_en %}
 {% let content_sv    = post.content_sv %}
 {% let content_en    = post.content_en %}
-    {% if post.published %}
+{% if post.published %}
     {% let publish_time = post.publish_time.to_string() %}
-    {% else %}
+{% else %}
     {% let publish_time = "".to_string() %}
-    {% endif %}
-    {% if let Some(post_mandate) = post.mandate %}
+{% endif %}
+{% if let Some(post_mandate) = post.mandate %}
     {% let mandate   = post_mandate.clone() %}
-    {% else %}
+{% else %}
     {% let mandate   = "".to_string() %}
-    {% endif %}
-    {% if post.darkmode_hide %}
+{% endif %}
+{% if post.darkmode_hide %}
     {% let darkmode_hide = true %}
-    {% else %}
+{% else %}
     {% let darkmode_hide = false %}
-    {% endif %}
+{% endif %}
 {% let method        = "patch" %}
-{% let action        = format!("/post/{}", post.id) %}
+{% let action        = format!("/posts/{}", post.id) %}
 {% else %}
 {% let title_sv      = &empty %}
 {% let title_en      = &empty %}
@@ -43,7 +43,7 @@
 {% let mandate       = "".to_string() %}
 {% let darkmode_hide = false %}
 {% let method        = "post" %}
-{% let action        = "/post".to_string() %}
+{% let action        = "/posts".to_string() %}
 {%- endif -%}
 
 {#- TODO: aria attributes -#}
@@ -53,17 +53,17 @@
             <input
                 {% call utils::field_with_default(post_form, "title_sv", title_sv) %}
                 type="text" required minlength="3"
-                placeholder='{{ ctx.t("post.new.field.title-sv.placeholder") }}'
+                placeholder='{{ ctx.t("posts.edit.field.title-sv.placeholder") }}'
                 class="ds-primary-input" />
             <input
                 {% call utils::field_with_default(post_form, "title_en", title_en) %}
                 type="text" required minlength="3"
-                placeholder='{{ ctx.t("post.new.field.title-en.placeholder") }}'
+                placeholder='{{ ctx.t("posts.edit.field.title-en.placeholder") }}'
                 class="ds-secondary-input" />
         </div>
 
         <div class="col-md-6">
-            <label for="content_sv">{{ ctx.t("post.new.field.content-sv.label") }}</label>
+            <label for="content_sv">{{ ctx.t("posts.edit.field.content-sv.label") }}</label>
             {% let value = post_form.field_value("content_sv").unwrap_or(content_sv) %}
             <textarea
                 id="content_sv" name="content_sv" class="col-xs-12" rows="12" required minlength="10"
@@ -72,7 +72,7 @@
         </div>
 
         <div class="col-md-6">
-            <label class="form-label-block" for="content_en">{{ ctx.t("post.new.field.content-en.label") }}</label>
+            <label class="form-label-block" for="content_en">{{ ctx.t("posts.edit.field.content-en.label") }}</label>
             {% let value = post_form.field_value("content_en").unwrap_or(content_en) %}
             <textarea
                 id="content_en" name="content_en" class="col-xs-12" rows="12" required minlength="10"
@@ -86,17 +86,17 @@
             <h3>{{ ctx.t("nav.metadata") }}</h3>
             <div>
                 <div class="form-group col-xs-12">
-                    <label class="form-label-block" for="publish_time">{{ ctx.t("post.new.field.publish-time.label") }}</label>
+                    <label class="form-label-block" for="publish_time">{{ ctx.t("posts.edit.field.publish-time.label") }}</label>
                     <input
                         id="publish_time" {% call utils::field_with_default(post_form, "publish_time", publish_time) %}
                         class="form-control input" type="datetime-local"
                         placeholder="YYYY-MM-DDThh:mm" />
-                    <small>{{ ctx.t("post.new.field.publish-time.tip") }}</small>
+                    <small>{{ ctx.t("posts.edit.field.publish-time.tip") }}</small>
                 </div>
                 <div class="form-group col-xs-12">
-                    <label class="form-label-block" for="mandate">{{ ctx.t("post.new.field.mandate.label") }}</label>
+                    <label class="form-label-block" for="mandate">{{ ctx.t("posts.edit.field.mandate.label") }}</label>
                     <select id="mandate" name="mandate" class="form-control input">
-                        <option value="">{{ ctx.t("post.new.field.mandate.yourself") }}</option>
+                        <option value="">{{ ctx.t("posts.edit.field.mandate.yourself") }}</option>
                         {# TODO: just request mandates on demand and skip this bs... #}
                         {% if let Some(user) = ctx.user %}
                         {% for group in user.groups() %}
@@ -107,12 +107,12 @@
                 </div>
                 <div class="form-group">
                     <div class="col-xs-10">
-                        <label class="form-label-inline" for="darkmode_hide">{{ ctx.t("post.new.field.darkmode-hide.label") }}</label>
+                        <label class="form-label-inline" for="darkmode_hide">{{ ctx.t("posts.edit.field.darkmode-hide.label") }}</label>
                     </div>
                     <div class="col-xs-2">
                         <input id="darkmode_hide" {% call utils::checkbox_with_default(post_form, "darkmode_hide", darkmode_hide) %} />
                     </div>
-                    <small class="col-xs-12">{{ ctx.t("post.new.field.darkmode-hide.tip") }}</small>
+                    <small class="col-xs-12">{{ ctx.t("posts.edit.field.darkmode-hide.tip") }}</small>
                 </div>
             </div>
         </div>

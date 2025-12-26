@@ -4,10 +4,6 @@
 
 {% block heading %}{{ ctx.t("index.heading") }}{% endblock heading %}
 
-{% block header_action %}
-<a class="primary-action" href="#">{{ ctx.t("control.new") }}</a>
-{% endblock header_action %}
-
 {% block content %}
 <h1>
     {% if let Some(user) = ctx.user %}

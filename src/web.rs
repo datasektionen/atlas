@@ -7,7 +7,7 @@ use crate::{errors::AppResult, guards::context::PageContext, routing::RouteTree}
 
 mod auth;
 mod catchers;
-mod post;
+mod posts;
 
 type RenderedTemplate = RawHtml<String>;
 
@@ -20,7 +20,7 @@ enum Either<L, R> {
 pub fn tree() -> RouteTree {
     RouteTree::Branch(vec![
         auth::routes(),
-        post::routes(),
+        posts::routes(),
         rocket::routes![index, subscribe].into(),
     ])
 }

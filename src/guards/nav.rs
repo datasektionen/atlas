@@ -32,7 +32,7 @@ impl<'r> FromRequest<'r> for Nav {
             let perms = user.permissions();
 
             if perms.has(&HivePermission::Post) {
-                links.push(NavLink::new("post", "/post?edit"));
+                links.push(NavLink::new("post", "/posts?edit"));
             }
         }
 

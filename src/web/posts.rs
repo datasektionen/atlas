@@ -10,7 +10,7 @@ use sqlx::PgPool;
 
 use crate::{
     auth::hive::HivePermission,
-    dto::post::EditPostDto,
+    dto::posts::EditPostDto,
     errors::AppResult,
     guards::{context::PageContext, user::User},
     models::Post,
@@ -22,7 +22,7 @@ use super::{Either, RenderedTemplate};
 
 pub fn routes() -> RouteTree {
     rocket::routes![
-        post_list,
+        posts_list,
         post_edit_new,
         post_create_new,
         post_view,
@@ -33,23 +33,23 @@ pub fn routes() -> RouteTree {
 }
 
 #[derive(Template)]
-#[template(path = "post/post.html.j2")]
-struct PostView<'f, 'v> {
+#[template(path = "posts/edit.html.j2")]
+struct PostEditView<'f, 'v> {
     ctx: PageContext,
     post_form: &'f form::Context<'v>,
     post: Option<Post>,
 }
 
-#[rocket::get("/post")]
-fn post_list(ctx: PageContext) -> AppResult<RenderedTemplate> {
+#[rocket::get("/posts")]
+fn posts_list(ctx: PageContext) -> AppResult<RenderedTemplate> {
     Ok(RawHtml("temp".to_string()))
 }
 
-#[rocket::get("/post?edit")]
+#[rocket::get("/posts?edit")]
 fn post_edit_new(ctx: PageContext) -> AppResult<RenderedTemplate> {
     ctx.perms()?.require(HivePermission::Post)?;
 
-    let template = PostView {
+    let template = PostEditView {
         ctx,
         post_form: &form::Context::default(),
         post: None,
@@ -58,7 +58,7 @@ fn post_edit_new(ctx: PageContext) -> AppResult<RenderedTemplate> {
     Ok(RawHtml(template.render()?))
 }
 
-#[rocket::post("/post", data = "<form>")]
+#[rocket::post("/posts", data = "<form>")]
 async fn post_create_new<'v>(
     form: Form<Contextual<'v, EditPostDto<'v>>>,
     ctx: PageContext,
@@ -80,7 +80,7 @@ async fn post_create_new<'v>(
         // validation failed, so show the form again
         debug!("Create post form errors: {:?}", &form.context);
 
-        let template = PostView {
+        let template = PostEditView {
             ctx,
             post_form: &form.context,
             post: None,
@@ -90,19 +90,19 @@ async fn post_create_new<'v>(
     }
 }
 
-#[rocket::get("/post/<id>")]
+#[rocket::get("/posts/<id>")]
 fn post_view(id: i64, ctx: PageContext) -> AppResult<RenderedTemplate> {
     Ok(RawHtml("temp".to_string()))
 }
 
-#[rocket::get("/post/<id>?edit")]
+#[rocket::get("/posts/<id>?edit")]
 async fn post_edit(id: i64, ctx: PageContext, db: &State<PgPool>) -> AppResult<RenderedTemplate> {
     ctx.perms()?.require(HivePermission::Post)?;
     // TODO: check mandate and such for permission
 
     let post = posts::require_one(id, db.inner()).await?;
 
-    let template = PostView {
+    let template = PostEditView {
         ctx,
         post_form: &form::Context::default(),
         post: Some(post),
@@ -111,7 +111,7 @@ async fn post_edit(id: i64, ctx: PageContext, db: &State<PgPool>) -> AppResult<R
     Ok(RawHtml(template.render()?))
 }
 
-#[rocket::patch("/post/<id>", data = "<form>")]
+#[rocket::patch("/posts/<id>", data = "<form>")]
 fn post_update<'v>(
     id: i64,
     form: Form<Contextual<'v, EditPostDto<'v>>>,

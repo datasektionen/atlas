@@ -1,8 +1,8 @@
 {% extends "base.html.j2" %}
 
-{% block title %}{{ ctx.t("post.heading") }}{% endblock title %}
+{% block title %}{{ ctx.t("posts.edit.heading") }}{% endblock title %}
 
-{% block heading %}{{ ctx.t("post.heading") }}{% endblock heading %}
+{% block heading %}{{ ctx.t("posts.edit.heading") }}{% endblock heading %}
 
 {% block header_action %}
 <input class="primary-action" type="submit" name="draft" form="post-form" value="{{ ctx.t("control.draft") }}" />
@@ -14,5 +14,5 @@
 {% endblock footer_actions %}
 
 {% block content %}
-{% include "post/form.html.j2" %}
+{% include "posts/form.html.j2" %}
 {% endblock content %}
