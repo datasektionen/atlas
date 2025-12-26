@@ -173,9 +173,9 @@ impl<'de> Deserialize<'de> for HivePermission {
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 pub struct HiveGroup {
     #[serde(rename = "group_name")]
-    name: String,
+    pub name: String,
     #[serde(rename = "group_id")]
-    id: String,
+    pub id: String,
     #[serde(rename = "group_domain")]
-    domain: String,
+    pub domain: String,
 }

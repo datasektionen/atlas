@@ -1,0 +1,18 @@
+{% extends "base.html.j2" %}
+
+{% block title %}{{ ctx.t("post.heading") }}{% endblock title %}
+
+{% block heading %}{{ ctx.t("post.heading") }}{% endblock heading %}
+
+{% block header_action %}
+<input class="primary-action" type="submit" name="draft" form="post-form" value="{{ ctx.t("control.draft") }}" />
+{% endblock header_action %}
+
+{% block footer_actions %}
+<input class="button secondary-action" type="submit" name="draft" form="post-form" value="{{ ctx.t("control.draft") }}" />
+<input class="button primary-action" type="submit" name="publish" form="post-form" value="{{ ctx.t("control.publish") }}" />
+{% endblock footer_actions %}
+
+{% block content %}
+{% include "post/form.html.j2" %}
+{% endblock content %}

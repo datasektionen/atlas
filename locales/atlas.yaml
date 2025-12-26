@@ -6,6 +6,12 @@ control.back:
 control.new:
   sv: Skapa ny
   en: Create new
+control.draft:
+  sv: Spara utkast
+  en: Save draft
+control.publish:
+  sv: Publicera
+  en: Publish
 errors.caught.not-found.title:
   sv: Sidan hittades inte
   en: Page Not Found
@@ -26,6 +32,16 @@ errors.caught.unknown.description:
   en: >
     An unknown error has occured! If the error persists, please contact an
     administrator.
+errors.dto.db.title:
+  sv: Databasfel
+  en: Database Error
+errors.dto.db.descripton:
+  sv: >
+    Ett fel inträffade vid en förfrågan till databasen. Försök igen senare
+    eller kontakta en administratör om problemet kvarstår.
+  en: >
+    An error occured while querying the database. Please try again later, or
+    contact an administrator if the problem persists.
 errors.dto.pipeline.title:
   sv: Pipelinefel
   en: Pipeline Error
@@ -36,14 +52,6 @@ errors.dto.pipeline.description:
   en: >
     An error occured while processing your request. Try again later or
     contact an administrator if the error persists.
-errors.dto.forbidden.title:
-  sv: Inte tillåtet
-  en: Not Allowed
-errors.dto.forbidden.description:
-  sv: >
-    Du saknar de nödvändiga behörigheterna för att utföra denna åtgärd.
-  en: >
-    You lack the necessary permissions to perform this action.
 errors.dto.auth.login.flow.expired.title:
   sv: Autentiseringstiden har löpt ut
   en: Authentication Flow Expired
@@ -54,6 +62,20 @@ errors.dto.auth.login.flow.expired.description:
   en: >
     Too much time has passed since you started this login attempt and it can
     no longer be completed. Please try again.
+errors.dto.forbidden.title:
+  sv: Inte tillåtet
+  en: Not Allowed
+errors.dto.forbidden.description:
+  sv: >
+    Du saknar de nödvändiga behörigheterna för att utföra denna åtgärd.
+  en: >
+    You lack the necessary permissions to perform this action.
+errors.dto.post.unknown.title:
+  sv: Okänt inlägg
+  en: Unknown Post
+errors.dto.post.unknown.description:
+  sv: Kunde inte hitta det efterfrågade inlägget.
+  en: Could not find the requested post.
 errors.code:
   sv: "kod: %{x}"
   en: "code: %{x}"
@@ -97,6 +119,9 @@ nav.login:
 nav.logout:
   sv: Logga ut
   en: Log out
+nav.metadata:
+  sv: Metadata
+  en: Metadata
 nav.lang.switch:
   sv: Byt språk
   en: Switch language
@@ -106,6 +131,39 @@ nav.link.subscribe:
 nav.link.post:
   sv: Skapa inlägg
   en: Create post
+post.heading:
+  sv: Redigera inlägg
+  en: Edit post
+post.new.field.title-sv.placeholder:
+  sv: Titel (svenska)
+  en: Title (Swedish)
+post.new.field.title-en.placeholder:
+  sv: Titel (engelska)
+  en: Title (English)
+post.new.field.content-sv.label:
+  sv: "Innehåll (svenska):"
+  en: "Content (Swedish):"
+post.new.field.content-en.label:
+  sv: "Innehåll (engelska):"
+  en: "Content (English):"
+post.new.field.publish-time.label:
+  sv: "Publiceringstid:"
+  en: "Publish time:"
+post.new.field.publish-time.tip:
+  sv: Lämna blankt för direkt publicering
+  en: Leave blank to publish instantly
+post.new.field.mandate.label:
+  sv: "Publicera i egenskap av:"
+  en: "Publish as:"
+post.new.field.mandate.yourself:
+  sv: Dig själv
+  en: Yourself
+post.new.field.darkmode-hide.label:
+  sv: "Mörklägg:"
+  en: "Darken:"
+post.new.field.darkmode-hide.tip:
+  sv: Dölj automatiskt under mottagningen
+  en: Hide automatically during the reception
 subscribe.heading:
   sv: Prenumerera
   en: Subscribe

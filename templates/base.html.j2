@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
         {%- block full_title -%}
-        {%- block title -%}{%- endblock title -%}&nbsp;| Atlas
+        {%- block title -%}{%- endblock title %} | Atlas
         {%- endblock full_title -%}
     </title>
 
@@ -68,18 +68,20 @@
         </main>
     </div>
 
-    <footer class="footer-toolbar">
-        <div class="footer-toolbar-inner row">
-            {%- block full_footer -%}
-            <div class="footer-toolbar-info col-md-6">
-                {%- block footer_info -%}
-                {%- endblock footer_info -%}
+    <footer class="pink">
+        <div class="footer-toolbar">
+            <div class="footer-toolbar-inner row">
+                {%- block full_footer -%}
+                <div class="footer-toolbar-info col-md-6">
+                    {%- block footer_info -%}
+                    {%- endblock footer_info -%}
+                </div>
+                <div class="footer-toolbar-action-buttons col-md-6 text-right">
+                    {%- block footer_actions -%}
+                    {%- endblock footer_actions -%}
+                </div>
+                {%- endblock full_footer -%}
             </div>
-            <div class="footer-toolbar-action-buttons col-md-6">
-                {%- block footer_actions -%}
-                {%- endblock footer_actions -%}
-            </div>
-            {%- endblock full_footer -%}
         </div>
     </footer>
 </body>

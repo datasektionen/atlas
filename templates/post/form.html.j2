@@ -1,0 +1,120 @@
+{%- import "utils.html.j2" as utils -%}
+
+{#- Set default values from a provided post for editing, or don't for new posts
+-#}
+{% let title_sv %}
+{% let title_en %}
+{% let content_sv %}
+{% let content_en %}
+{% let publish_time %}
+{% let mandate %}
+{% let darkmode_hide %}
+{% let method %}
+{% let action %}
+{% let empty = "".to_string() %}
+{%- if let Some(post) = post -%}
+{% let title_sv      = post.title_sv %}
+{% let title_en      = post.title_en %}
+{% let content_sv    = post.content_sv %}
+{% let content_en    = post.content_en %}
+    {% if post.published %}
+    {% let publish_time = post.publish_time.to_string() %}
+    {% else %}
+    {% let publish_time = "".to_string() %}
+    {% endif %}
+    {% if let Some(post_mandate) = post.mandate %}
+    {% let mandate   = post_mandate.clone() %}
+    {% else %}
+    {% let mandate   = "".to_string() %}
+    {% endif %}
+    {% if post.darkmode_hide %}
+    {% let darkmode_hide = true %}
+    {% else %}
+    {% let darkmode_hide = false %}
+    {% endif %}
+{% let method        = "patch" %}
+{% let action        = format!("/post/{}", post.id) %}
+{% else %}
+{% let title_sv      = &empty %}
+{% let title_en      = &empty %}
+{% let content_sv    = &empty %}
+{% let content_en    = &empty %}
+{% let publish_time  = "".to_string() %}
+{% let mandate       = "".to_string() %}
+{% let darkmode_hide = false %}
+{% let method        = "post" %}
+{% let action        = "/post".to_string() %}
+{%- endif -%}
+
+{#- TODO: aria attributes -#}
+<form id="post-form" method="{{ method }}" action="{{ action }}">
+    <div class="col-md-9">
+        <div class="col-xs-12">
+            <input
+                {% call utils::field_with_default(post_form, "title_sv", title_sv) %}
+                type="text" required minlength="3"
+                placeholder='{{ ctx.t("post.new.field.title-sv.placeholder") }}'
+                class="ds-primary-input" />
+            <input
+                {% call utils::field_with_default(post_form, "title_en", title_en) %}
+                type="text" required minlength="3"
+                placeholder='{{ ctx.t("post.new.field.title-en.placeholder") }}'
+                class="ds-secondary-input" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="content_sv">{{ ctx.t("post.new.field.content-sv.label") }}</label>
+            {% let value = post_form.field_value("content_sv").unwrap_or(content_sv) %}
+            <textarea
+                id="content_sv" name="content_sv" class="col-xs-12" rows="12" required minlength="10"
+                {% call utils::field_validation(post_form, "content_sv") %}
+            >{{ value }}</textarea>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label-block" for="content_en">{{ ctx.t("post.new.field.content-en.label") }}</label>
+            {% let value = post_form.field_value("content_en").unwrap_or(content_en) %}
+            <textarea
+                id="content_en" name="content_en" class="col-xs-12" rows="12" required minlength="10"
+                {% call utils::field_validation(post_form, "content_en") %}
+            >{{ value }}</textarea>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="sidebar toolbox">
+            <h3>{{ ctx.t("nav.metadata") }}</h3>
+            <div>
+                <div class="form-group col-xs-12">
+                    <label class="form-label-block" for="publish_time">{{ ctx.t("post.new.field.publish-time.label") }}</label>
+                    <input
+                        id="publish_time" {% call utils::field_with_default(post_form, "publish_time", publish_time) %}
+                        class="form-control input" type="datetime-local"
+                        placeholder="YYYY-MM-DDThh:mm" />
+                    <small>{{ ctx.t("post.new.field.publish-time.tip") }}</small>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="form-label-block" for="mandate">{{ ctx.t("post.new.field.mandate.label") }}</label>
+                    <select id="mandate" name="mandate" class="form-control input">
+                        <option value="">{{ ctx.t("post.new.field.mandate.yourself") }}</option>
+                        {# TODO: just request mandates on demand and skip this bs... #}
+                        {% if let Some(user) = ctx.user %}
+                        {% for group in user.groups() %}
+                        <option {% call utils::option_form_with_default(post_form, "mandate", format!("{}@{}", group.id, group.domain), mandate) %}>{{ group.name }}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-10">
+                        <label class="form-label-inline" for="darkmode_hide">{{ ctx.t("post.new.field.darkmode-hide.label") }}</label>
+                    </div>
+                    <div class="col-xs-2">
+                        <input id="darkmode_hide" {% call utils::checkbox_with_default(post_form, "darkmode_hide", darkmode_hide) %} />
+                    </div>
+                    <small class="col-xs-12">{{ ctx.t("post.new.field.darkmode-hide.tip") }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

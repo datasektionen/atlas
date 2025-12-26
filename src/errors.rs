@@ -20,6 +20,10 @@ pub type AppResult<T> = Result<T, AppError>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
+    #[error("database error: {0}")]
+    DbError(#[from] sqlx::Error),
+    #[error("query building error: {0}")]
+    QueryBuildError(#[source] sqlx::error::BoxDynError),
     #[error("template render error: {0}")]
     RenderError(#[from] askama::Error),
 
@@ -38,6 +42,9 @@ pub enum AppError {
     #[error("user was not authenticated when required")]
     NotAuthenticated,
 
+    #[error("could not find post with id '{0}'")]
+    NoSuchPost(i64),
+
     #[error("failed to decode error while generating error page")]
     ErrorDecodeFailure,
     #[error("error while connecting to an external service")]
@@ -47,6 +54,8 @@ pub enum AppError {
 impl AppError {
     fn status(&self) -> Status {
         match self {
+            Self::DbError(..) => Status::InternalServerError,
+            Self::QueryBuildError(..) => Status::InternalServerError,
             Self::RenderError(..) => Status::InternalServerError,
             Self::OidcAuthenticationError(..) => Status::InternalServerError,
             Self::StateSerializationError(..) => Status::InternalServerError,
@@ -54,6 +63,7 @@ impl AppError {
             Self::AuthenticationFlowExpired => Status::Gone,
             Self::NotAllowed(..) => Status::Forbidden,
             Self::NotAuthenticated => Status::Forbidden,
+            Self::NoSuchPost(..) => Status::NotFound,
             Self::ErrorDecodeFailure => Status::InternalServerError,
             Self::ExternalConnectionError => Status::InternalServerError,
         }

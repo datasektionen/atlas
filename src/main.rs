@@ -10,7 +10,9 @@ mod dto;
 mod errors;
 mod guards;
 mod logging;
+mod models;
 mod routing;
+mod services;
 mod splash;
 mod web;
 

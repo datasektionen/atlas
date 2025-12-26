@@ -7,18 +7,24 @@ use crate::{errors::AppError, guards::lang::Language};
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "key", content = "context")]
 enum InnerAppErrorDto {
+    #[serde(rename = "db")]
+    DbError,
     // Anything related to handling requests/responses (500)
     #[serde(rename = "pipeline")]
     PipelineError,
-    #[serde(rename = "forbidden")]
-    NotAllowed,
     #[serde(rename = "auth.login.flow.expired")]
     AuthenticationFlowExpired,
+    #[serde(rename = "forbidden")]
+    NotAllowed,
+    #[serde(rename = "post.unknown")]
+    NoSuchPost { id: i64 },
 }
 
 impl From<AppError> for InnerAppErrorDto {
     fn from(err: AppError) -> Self {
         match err {
+            AppError::DbError(..) => Self::DbError,
+            AppError::QueryBuildError(..) => Self::PipelineError,
             AppError::RenderError(..) => Self::PipelineError,
             AppError::OidcAuthenticationError(..) => Self::PipelineError,
             AppError::StateSerializationError(..) => Self::PipelineError,
@@ -28,6 +34,7 @@ impl From<AppError> for InnerAppErrorDto {
             AppError::AuthenticationFlowExpired => Self::AuthenticationFlowExpired,
             AppError::NotAllowed(..) => Self::NotAllowed,
             AppError::NotAuthenticated => Self::NotAllowed,
+            AppError::NoSuchPost(id) => Self::NoSuchPost { id },
         }
     }
 }
@@ -36,19 +43,23 @@ impl From<AppError> for InnerAppErrorDto {
 impl InnerAppErrorDto {
     fn title<'a>(&'a self, lang: &Language) -> Cow<'a, str> {
         match self {
+            Self::DbError => lang.t("errors.dto.db.title"),
             Self::PipelineError => lang.t("errors.dto.pipeline.title"),
-            Self::NotAllowed => lang.t("errors.dto.forbidden.title"),
             Self::AuthenticationFlowExpired => lang.t("errors.dto.auth.login.flow.expired.title"),
+            Self::NotAllowed => lang.t("errors.dto.forbidden.title"),
+            Self::NoSuchPost { .. } => lang.t("errors.dto.post.unknown.title"),
         }
     }
 
     fn description(&self, lang: &Language) -> String {
         match self {
+            Self::DbError => lang.t("errors.dto.db.description").to_string(),
             Self::PipelineError => lang.t("errors.dto.pipeline.description").to_string(),
-            Self::NotAllowed => lang.t("errors.dto.forbidden.description").to_string(),
             Self::AuthenticationFlowExpired => lang
                 .t("errors.dto.auth.login.flow.expired.description")
                 .to_string(),
+            Self::NotAllowed => lang.t("errors.dto.forbidden.description").to_string(),
+            Self::NoSuchPost { .. } => lang.t("errors.dto.post.unknown.description").to_string(),
         }
     }
 }
