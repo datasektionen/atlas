@@ -29,8 +29,9 @@
             links: [
                 {% for link in ctx.nav.links %}
                 {
-                    str: "{{ ctx.t(format!("nav.link.{}", link.key).as_str()) }}",
-                        href: "{{ link.href }}"
+                    {% let tmp = format!("nav.link.{}", link.key) %}
+                    str: "{{ ctx.t(tmp.as_str()) }}",
+                    href: "{{ link.href }}"
                 },
                 {% endfor %}
             ]

@@ -26,9 +26,17 @@ impl PageContext {
         self.lang.t(key)
     }
 
-    // Templates don't support macros and therefore variable arguments, hence this function
+    // Templates don't support macros and therefore variable arguments, hence these functions
     pub fn t1<'a, T: fmt::Display>(&self, key: &'a str, x: T) -> Cow<'a, str> {
         self.lang.t1(key, x)
+    }
+
+    pub fn t2<'a, T, U>(&self, key: &'a str, x: T, y: U) -> Cow<'a, str>
+    where
+        T: fmt::Display,
+        U: fmt::Display,
+    {
+        self.lang.t2(key, x, y)
     }
 
     // Shorthand to generate splash text

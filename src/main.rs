@@ -8,6 +8,7 @@ mod auth;
 mod config;
 mod dto;
 mod errors;
+mod filters;
 mod guards;
 mod logging;
 mod models;

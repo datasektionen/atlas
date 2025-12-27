@@ -12,6 +12,9 @@ control.draft:
 control.publish:
   sv: Publicera
   en: Publish
+control.edit:
+  sv: Redigera
+  en: Edit
 errors.caught.not-found.title:
   sv: Sidan hittades inte
   en: Page Not Found
@@ -35,7 +38,7 @@ errors.caught.unknown.description:
 errors.dto.db.title:
   sv: Databasfel
   en: Database Error
-errors.dto.db.descripton:
+errors.dto.db.description:
   sv: >
     Ett fel inträffade vid en förfrågan till databasen. Försök igen senare
     eller kontakta en administratör om problemet kvarstår.
@@ -131,6 +134,12 @@ nav.link.subscribe:
 nav.link.post:
   sv: Skapa inlägg
   en: Create post
+posts.details.heading:
+  sv: Visar inlägg
+  en: Showing Post
+posts.details.attribution.mandate:
+  sv: "%{y} (via %{x})"
+  en: "%{y} (via %{x})"
 posts.edit.heading:
   sv: Redigera inlägg
   en: Edit post

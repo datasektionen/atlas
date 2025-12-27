@@ -63,6 +63,14 @@ impl Language {
     pub fn t1<'a, T: fmt::Display>(&self, key: &'a str, x: T) -> Cow<'a, str> {
         rust_i18n::t!(key, locale = self.i18n_locale(), x = x)
     }
+
+    pub fn t2<'a, T, U>(&self, key: &'a str, x: T, y: U) -> Cow<'a, str>
+    where
+        T: fmt::Display,
+        U: fmt::Display,
+    {
+        rust_i18n::t!(key, locale = self.i18n_locale(), x = x, y = y)
+    }
 }
 
 fn negotiate_language(accept_language: &str) -> Option<Language> {

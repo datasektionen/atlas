@@ -16,5 +16,6 @@ pub struct EditPostDto<'v> {
     pub mandate: Option<GroupKeyDto<'v>>,
     pub darkmode_hide: bool,
 
+    pub draft: SubmitType,
     pub publish: SubmitType,
 }

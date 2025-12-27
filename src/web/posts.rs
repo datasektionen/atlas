@@ -12,8 +12,9 @@ use crate::{
     auth::hive::HivePermission,
     dto::posts::EditPostDto,
     errors::AppResult,
+    filters,
     guards::{context::PageContext, user::User},
-    models::Post,
+    models::{Post, PostInfo},
     routing::RouteTree,
     services::posts,
 };
@@ -25,7 +26,7 @@ pub fn routes() -> RouteTree {
         posts_list,
         post_edit_new,
         post_create_new,
-        post_view,
+        post_details,
         post_edit,
         post_update
     ]
@@ -40,8 +41,17 @@ struct PostEditView<'f, 'v> {
     post: Option<Post>,
 }
 
+#[derive(Template)]
+#[template(path = "posts/details.html.j2")]
+struct PostDetailsView {
+    ctx: PageContext,
+    post: PostInfo,
+    can_edit: bool,
+}
+
 #[rocket::get("/posts")]
-fn posts_list(ctx: PageContext) -> AppResult<RenderedTemplate> {
+fn posts_list(_ctx: PageContext) -> AppResult<RenderedTemplate> {
+    // TODO
     Ok(RawHtml("temp".to_string()))
 }
 
@@ -91,8 +101,27 @@ async fn post_create_new<'v>(
 }
 
 #[rocket::get("/posts/<id>")]
-fn post_view(id: i64, ctx: PageContext) -> AppResult<RenderedTemplate> {
-    Ok(RawHtml("temp".to_string()))
+async fn post_details(
+    id: i64,
+    ctx: PageContext,
+    db: &State<PgPool>,
+) -> AppResult<RenderedTemplate> {
+    let post: PostInfo = posts::require_one(id, db.inner()).await?;
+
+    // TODO: better permission handler and check for darkmode and draft
+    let can_edit = if let Some(user) = &ctx.user {
+        post.author.as_str() == user.username()
+    } else {
+        false
+    };
+
+    let template = PostDetailsView {
+        ctx,
+        post,
+        can_edit,
+    };
+
+    Ok(RawHtml(template.render()?))
 }
 
 #[rocket::get("/posts/<id>?edit")]
@@ -111,14 +140,36 @@ async fn post_edit(id: i64, ctx: PageContext, db: &State<PgPool>) -> AppResult<R
     Ok(RawHtml(template.render()?))
 }
 
-#[rocket::patch("/posts/<id>", data = "<form>")]
-fn post_update<'v>(
+// TODO: use HTMX to send PATCH requests from forms
+// #[rocket::patch("/posts/<id>", data = "<form>")]
+#[rocket::post("/posts/<id>", data = "<form>")]
+async fn post_update<'v>(
     id: i64,
     form: Form<Contextual<'v, EditPostDto<'v>>>,
     ctx: PageContext,
     db: &State<PgPool>,
-) -> AppResult<RenderedTemplate> {
+) -> AppResult<Either<Redirect, RenderedTemplate>> {
     // TODO: check permission to edit for mandate
+    ctx.perms()?.require(HivePermission::Post)?;
 
-    Ok(RawHtml("temp".to_string()))
+    if let Some(dto) = &form.value {
+        // validation passed
+
+        posts::update(id, dto, db.inner()).await?;
+
+        // TODO: redirect to edit page only on draft save, otherwise view page
+        // also HTMX and unpublish button
+        Ok(Either::Left(Redirect::to(uri!(post_edit(id = id)))))
+    } else {
+        // validation failed, so show the form again
+        debug!("Edit post form errors: {:?}", &form.context);
+
+        let template = PostEditView {
+            ctx,
+            post_form: &form.context,
+            post: None,
+        };
+
+        Ok(Either::Right(RawHtml(template.render()?)))
+    }
 }

@@ -10,11 +10,11 @@ aria-invalid="false"
 name="{{ name }}"
 {%- let value = form.field_value(name) -%}
 value='{{ value.unwrap_or(default) }}'
-{%- call field_validation(form, name) -%}
+{%- call field_validation(form, name) -%}{%- endcall -%}
 {%- endmacro field_with_default %}
 
 {% macro field(form, name) -%}
-{%- call field_with_default(form, name, "") -%}
+{%- call field_with_default(form, name, "") -%}{%- endcall -%}
 {%- endmacro field %}
 
 {% macro checkbox_with_default(form, name, default) -%}
@@ -31,7 +31,7 @@ aria-invalid="false"
 {%- endmacro checkbox_with_default %}
 
 {% macro checkbox(form, name) -%}
-{%- call checkbox_with_default(form, name, false) -%}
+{%- call checkbox_with_default(form, name, false) -%}{%- endcall -%}
 {%- endmacro checkbox %}
 
 {% macro option(value, selected_value) -%}
@@ -49,5 +49,5 @@ selected
 {%- endmacro option_form_with_default %}
 
 {% macro option_form(form, name, value) -%}
-{%- call option_form_with_default(form, name, value, "") -%}
+{%- call option_form_with_default(form, name, value, "") -%}{%- endcall -%}
 {%- endmacro option_form %}

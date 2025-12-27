@@ -6,3 +6,5 @@ Nu fritt från Java!
 NP ≠ P
 Informationsspridning är NP-svårt
 Det farligaste spelet
+Calypso 2: Elektrisk bugalå
+Prometheus 3: Crème brûlée
