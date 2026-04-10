@@ -5,23 +5,21 @@ edition = "2024"
 authors = ["Konglig Datasektionen"]
 description = "News and event system"
 license = "GPL-3.0-or-later"
-rust-version = "1.92"
+rust-version = "1.94"
 
 [dependencies]
-askama = "0.15.0"
-chrono = { version = "0.4.42", features = ["serde"] }
-figment = { version = "0.10.19", features = ["toml", "env"] }
-hex = "0.4.3"
+actix-web = "4.13.0"
+askama = "0.15.6"
+askama_web = { version = "0.15.2", features = ["actix-web-4"] }
+chrono = { version = "0.4.44", features = ["serde"] }
 log = "0.4.29"
 markdown = "1.0.0"
 openidconnect = { version = "4.0.1", features = ["timing-resistant-secret-traits"] }
-rand = "0.9.2"
-regex = "1.12.2"
-reqwest = { version = "0.12.28", features = ["json", "rustls-tls"], default-features = false }
-rocket = { version = "0.5.1", features = ["json", "secrets"] }
 rust-i18n = "3.1.5"
 serde = "1.0.228"
-serde_json = "1.0.145"
-simplelog = "0.12.2"
-sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "uuid", "chrono"] }
-thiserror = "2.0.17"
+serde_json = "1.0.149"
+sqlx = { version = "0.8.6", features = ["postgres", "uuid", "chrono"] }
+thiserror = "2.0.18"
+tracing = "0.1.44"
+tracing-log = "0.2.0"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

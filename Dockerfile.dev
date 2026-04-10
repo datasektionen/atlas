@@ -1,9 +1,10 @@
 ARG RUST_VERSION=1.94
 
-## BUILD
 FROM rust:${RUST_VERSION}-alpine AS build
 
 WORKDIR /atlas
+
+RUN apk add nginx bash
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=./target \
@@ -14,31 +15,15 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=bind,source=./locales,target=./locales \
     --mount=type=bind,source=./migrations,target=./migrations \
     \
-    cargo build --locked --release \
-    && cp ./target/release/atlas .
+    cargo build \
+    && cp ./target/debug/atlas .
 
-## RUN
-FROM alpine:latest
-
-ARG UID=10001
-ARG USER=atlas
-
-RUN adduser \
-    --disabled-password \
-    --no-create-home \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --uid "${UID}" \
-    ${USER}
-
-USER ${USER}
-
-WORKDIR /atlas
-COPY --from=build /atlas/atlas .
 COPY ./splash.txt /atlas/splash.txt
 COPY ./static /atlas/static
 
-EXPOSE ${ATLAS_PORT:-8080}
+EXPOSE 8080
 
-ENTRYPOINT [ "./atlas" ]
+RUN echo "nginx &" >> ./run
+RUN echo "./atlas" >> ./run
+
+ENTRYPOINT ["bash", "./run" ]

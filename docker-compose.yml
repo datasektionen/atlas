@@ -1,17 +1,20 @@
 services:
   atlas:
-    build: .
+    build:
+      dockerfile: Dockerfile.dev
     ports:
-      - "127.0.0.1:6767:6767"
+      - "127.0.0.1:8080:8080"
     environment:
       TZ: Europe/Stockholm
       ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
-      ATLAS_HIVE_API_URL: http://nyckeln:7004/api/v1
-      ATLAS_HIVE_API_KEY: secret
-      ATLAS_OIDC_ISSUER_URL: http://nyckeln:7003
-      ATLAS_OIDC_CLIENT_ID: client-id
-      ATLAS_OIDC_CLIENT_SECRET: client-secret
-      ATLAS_DARKMODE_URL: no
+      HIVE_API_URL: http://nyckeln:7004/api/v1
+      HIVE_API_KEY: secret
+      SECRET_KEY: secret
+      OIDC_ISSUER_URL: http://localhost:7003
+      OIDC_CLIENT_ID: client-id
+      OIDC_CLIENT_SECRET: client-secret
+      DARKMODE_URL: no
+      RUST_LOG: debug
     develop:
       watch:
         - path: ./src
@@ -27,9 +30,6 @@ services:
         - path: ./static
           action: sync
           target: /atlas/static
-        - path: ./atlas.toml
-          action: sync+restart
-          target: /atlas/atlas.toml
         - path: ./splash.txt
           action: sync+restart
           target: /atlas/splash.txt
@@ -37,7 +37,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:18
+    image: postgres:latest
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -53,25 +53,35 @@ services:
       timeout: 2s
       retries: 3
   nyckeln:
-    build: ../nyckeln-under-dorrmattan
-    #image: ghcr.io/datasektionen/nyckeln-under-dorrmattan
+    image: ghcr.io/datasektionen/nyckeln-under-dorrmattan
     configs:
       - source: nyckeln.yaml
         target: /config.yaml
     ports:
-      - 7001:7001
-      - 7002:7002
       - 7003:7003
       - 7004:7004
 
 configs:
+  nginx.conf:
+    content: |
+      events {}
+
+      http {
+        server {
+          listen 7003;
+
+          location / {
+            proxy_pass http://nyckeln:7003;
+          }
+        }
+      }
+
   nyckeln.yaml:
     content: |
       clients:
-        - id: "client-id" # use this in your oidc client
-          secret: "client-secret" # use this in your oidc client
-          allows_guests: false
-          redirect_uris: # URIs of your oidc client
+        - id: "client-id"
+          secret: "client-secret"
+          redirect_uris:
             - http://localhost:6767/auth/oidc-callback
 
       users:
