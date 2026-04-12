@@ -1,0 +1,31 @@
+<nav aria-label="Pagination">
+    <menu class="buttons">
+        {% if current_page > 1 %}
+        <li><a href="/" class="button outline small">&larr; Previous</a></li>
+        {% endif %} {% if current_page > 1 %}
+        <li>
+            <a href="/" class="button outline small">{{ current_page - 2 }}</a>
+        </li>
+        {% endif %} {% if current_page > 2 %}
+        <li>
+            <a href="/" class="button outline small">{{current_page - 1}}</a>
+        </li>
+        {% endif %}
+        <li>
+            <a href="/" class="button small" aria-current="page"
+                >{{ current_page }}</a
+            >
+        </li>
+        {% if current_page < total_pages - 2 %}
+        <li>
+            <a href="/" class="button outline small">{{current_page + 1}}</a>
+        </li>
+        {% endif %} {% if current_page < total_pages - 1 %}
+        <li>
+            <a href="/" class="button outline small">{{current_page + 2}}</a>
+        </li>
+        {% endif %} {% if current_page < total_pages %}
+        <li><a href="/" class="button outline small">Next &rarr;</a></li>
+        {% endif %}
+    </menu>
+</nav>

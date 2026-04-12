@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block content %}
+<h1>Welcome to <b class="karrik">ATLAS</b></h1>
+<div
+    class="grid"
+    style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))"
+>
+    {% for card in news_cards %} {% let title = card.title %} {% let owner =
+    card.owner %} {% let summary = card.summary %} {% let tags = card.tags %} {%
+    let date = card.date %} {% include "news_card.html" %} {% endfor %}
+</div>
+<div class="center" style="margin: var(--space-6)">
+    {% let current_page = 3 %} {% let total_pages = 10 %} {% include
+    "pagination.html" %}
+</div>
+
+{% endblock %}

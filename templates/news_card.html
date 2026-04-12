@@ -1,0 +1,15 @@
+<article class="card" ot-animate="fade-up">
+    <header>
+        <h3>{{ title }}</h3>
+        <p>{{ owner }}</p>
+    </header>
+    <p>{{ summary }}</p>
+    <footer class="hstack" style="justify-content: space-between">
+        <span class="hstack">
+            {% for tag in tags %}
+            <span class="badge">{{ tag }}</span>
+            {% endfor %}
+        </span>
+        {{ date | time_since }}
+    </footer>
+</article>

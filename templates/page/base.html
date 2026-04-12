@@ -1,0 +1,66 @@
+<!DOCTYPE >
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Atlas</title>
+        <link rel="stylesheet" href="/static/oat.min.css" />
+        <link rel="stylesheet" href="/static/style.css" />
+        <script src="/static/oat.min.js"></script>
+        <link rel="icon" type="image/svg+xml" href="/static/globe.svg" />
+        <link rel="stylesheet" href="/static/oat-animate.css" />
+        <script src="/static/oat-animate.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <span class="hstack">
+                <a href="/" class="hstack unstyled">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="10" />
+                        <path
+                            d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"
+                        />
+                        <path d="M2 12h20" />
+                    </svg>
+                    <p class="unstyled karrik">ATLAS</p>
+                </a>
+                <span
+                    class="hstack"
+                    style="gap: var(--space-4); margin-left: var(--space-6)"
+                >
+                    <a href="/event" class="unstyled">Events</a>
+                    <a href="/calendar" class="unstyled">Calendar</a>
+                    <a href="/profile" class="unstyled">Profile</a>
+                </span>
+            </span>
+            <span class="hstack">
+                {% match ctx.user %} {% when Some with (user) %}
+                <a href="/profile" class="unstyled">
+                    <figure data-variant="avatar" aria-label="Avatar">
+                        <img
+                            src="{{ user.avatar_url }}"
+                            alt="{{ user.name }}"
+                        />
+                    </figure>
+                </a>
+                {% when None %}
+                <button class="small">Login</button>
+                {% endmatch %}
+            </span>
+        </header>
+        <main>
+            {% let crumbs = ctx.crumbs %} {% include "breadcrumb.html" %}
+            <article>{% block content %} {% endblock %}</article>
+        </main>
+    </body>
+</html>

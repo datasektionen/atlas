@@ -1,0 +1,10 @@
+<nav aria-label="Breadcrumb">
+    <ol class="unstyled hstack" style="font-size: var(--text-7)">
+        <li aria-hidden="true">/</li>
+        {% for crumb in crumbs %}
+        <li><a href="{{ crumb.url }}" class="unstyled">{{ crumb.name }}</a></li>
+        {% if !loop.last %}
+        <li aria-hidden="true">/</li>
+        {% endif %} {% endfor %}
+    </ol>
+</nav>

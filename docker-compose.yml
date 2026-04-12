@@ -6,7 +6,7 @@ services:
       - "127.0.0.1:8080:8080"
     environment:
       TZ: Europe/Stockholm
-      ATLAS_DB_URL: postgresql://atlas:atlas@db:5432/atlas
+      DATABASE_URL: postgresql://atlas:atlas@db:5432/atlas
       HIVE_API_URL: http://nyckeln:7004/api/v1
       HIVE_API_KEY: secret
       SECRET_KEY: secret

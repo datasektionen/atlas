@@ -1,0 +1,38 @@
+<table>
+    <thead>
+        <tr>
+            <td>mon</td>
+            <td>tue</td>
+            <td>wed</td>
+            <td>thu</td>
+            <td>fri</td>
+            <td>sat</td>
+            <td>sun</td>
+        </tr>
+    </thead>
+      {# Start the very first row #}
+      <tr>
+        {% for day in cal.days %}
+          <td style="min-width: 10rem; min-height: 8rem;">
+              {% let is_current_month = day.is_current_month %}
+              {% let events = day.events %}
+              {% let day = day.date.day() %}
+              {% include "day_slot.html" %}
+          </td>
+
+          {# If we have reached the 7th item, close the row #}
+          {% if loop.index % 7 == 0 %}
+            </tr>
+            {# If this wasn't the very last item in the list, open a new row #}
+            {% if !loop.last %}
+              <tr>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {# Logic to close the final row if the total count isn't a multiple of 4 #}
+        {% if cal.days.len() % 7 != 0 %}
+          </tr>
+        {% endif %}
+      </tr>
+</table>

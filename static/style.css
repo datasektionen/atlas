@@ -1,0 +1,63 @@
+@font-face {
+    font-family: "Karrik";
+    src: url("/static/Karrik-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Karrik";
+    src: url("/static/Karrik-Italic.woff2") format("woff2");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Karrik", sans;
+}
+
+.karrik {
+    font-family: "Karrik", sans;
+}
+
+.underline:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+body header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body main {
+    padding: var(--space-4);
+}
+
+article {
+    border: 1px solid var(--border);
+    padding: var(--space-5);
+    border-radius: 3px;
+    margin-top: var(--space-4);
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid {
+    display: grid;
+    gap: var(--space-4);
+}

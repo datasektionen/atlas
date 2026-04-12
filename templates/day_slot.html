@@ -1,0 +1,78 @@
+<div
+    class="vstack"
+    style="
+        gap: var(--space-1);
+        height: 9vw;
+        min-width: 10rem;
+        max-width: 10rem;
+        min-height: 8rem;
+        overflow-y: scroll;
+    "
+>
+    {% if is_current_month %}
+    <p>{{ day }}</p>
+    {% else %}
+    <p style="color: var(--muted-foreground)">{{ day }}</p>
+    {% endif %} {% for event in events %}
+    <div
+        class="hstack underline"
+        style="
+            gap: var(--space-1);
+            padding: var(--space-1);
+            width: 100%;
+            flex-wrap: nowrap;
+        "
+    >
+        <div
+            style="
+                border-radius: 50%;
+                background-color: var(--danger);
+                aspect-ratio: 1;
+                width: 12px;
+                flex-shrink: 0;
+            "
+        ></div>
+        <a href="/" style="text-decoration: none; display: block; width: 100%">
+            <p
+                class="unstyled"
+                style="
+                    font-size: 12px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: block;
+                    max-width: 90%;
+                    margin-block-end: 0 !important;
+                "
+            >
+                {{ event.title }}
+            </p>
+            <span
+                class="hstack"
+                style="gap: var(--space-1); align-items: center"
+            >
+                <p class="unstyled" style="font-size: 9px">
+                    {{ event.from | format_time }}
+                </p>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M18 8L22 12L18 16" />
+                    <path d="M2 12H22" />
+                </svg>
+                <p class="unstyled" style="font-size: 9px">
+                    {{ event.to | format_time }}
+                </p>
+            </span>
+        </a>
+    </div>
+    {% endfor %}
+</div>

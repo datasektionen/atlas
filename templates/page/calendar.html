@@ -1,0 +1,7 @@
+{% extends "base.html" %} {% block content %}
+<div class="hstack" style="justify-content: space-between">
+    <h1>Calendar</h1>
+    {% include "month_select.html" %}
+</div>
+<div style="overflow-x: scroll">{% include "calendar_view.html" %}</div>
+{% endblock %}
