@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block content %}
+<div class="hstack" style="justify-content: space-between">
+    <span class="hstack" ot-animate="slide-left">
+        {% for tag in news.tags %}
+        <span class="badge">{{ tag }}</span>
+        {% endfor %}
+    </span>
+    <p
+        title="{{ news.date | format_date_time }}"
+        style="color: var(--text-muted); cursor: help"
+    >
+        {{ news.date | time_since }}
+    </p>
+</div>
+<header ot-animate="slide-left">
+    <h1>{{ news.title }}</h1>
+    <figure data-variant="avatar" aria-label="Avatar">
+        {{ news.owner | owner_icon | safe }}
+    </figure>
+</header>
+<div ot-animate="slide-left">{{ news.description | markdown | safe }}</div>
+{% endblock %}

@@ -1,5 +1,7 @@
 use askama_macros::filter_fn;
 use chrono::{DateTime, Local};
+use regex::Regex;
+use std::fmt::Display;
 
 #[filter_fn]
 pub fn time_since(value: &DateTime<Local>, _env: &dyn askama::Values) -> askama::Result<String> {
@@ -53,4 +55,50 @@ pub fn format_time(value: &DateTime<Local>, _env: &dyn askama::Values) -> askama
 #[filter_fn]
 pub fn format_date(value: &DateTime<Local>, _env: &dyn askama::Values) -> askama::Result<String> {
     Ok(value.format("%Y-%m-%d").to_string())
+}
+
+#[filter_fn]
+pub fn format_date_time(
+    value: &DateTime<Local>,
+    _env: &dyn askama::Values,
+) -> askama::Result<String> {
+    Ok(value.format("%Y-%m-%d %H:%M").to_string())
+}
+
+#[filter_fn]
+pub fn format_month(value: &DateTime<Local>, _env: &dyn askama::Values) -> askama::Result<String> {
+    Ok(format!("{} {}", value.format("%B"), value.format("%Y")))
+}
+
+#[filter_fn]
+pub fn markdown(value: impl Display, _env: &dyn askama::Values) -> askama::Result<String> {
+    // Accept any Display (String, &str, etc.), convert to String and render Markdown.
+    let s = value.to_string();
+    let ext = comrak::options::Extension::builder().autolink(true).build();
+    let html = comrak::markdown_to_html(
+        &s,
+        &comrak::Options {
+            extension: ext,
+            ..Default::default()
+        },
+    );
+    Ok(html)
+}
+
+#[filter_fn]
+pub fn strip_headers(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
+    // Remove markdown headers (lines that start with one or more #) while keeping the header text.
+    // This turns lines like "# Title" into "Title".
+    let re = Regex::new(r"(?m)^\s*#+\s*(.*)$").unwrap();
+    let result = re.replace_all(value, "$1");
+
+    Ok(result.trim_matches('\n').to_string())
+}
+
+#[filter_fn]
+pub fn owner_icon(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
+    let icon_url =
+        "<img src=\"https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png\" alt=\"{}\">".to_string();
+
+    Ok(icon_url)
 }

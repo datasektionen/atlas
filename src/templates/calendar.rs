@@ -1,22 +1,34 @@
-use chrono::{Datelike, Local, Month, TimeZone};
+use crate::filters;
+use chrono::{DateTime, Datelike, Local, Month, TimeZone};
+
+use crate::templates::index;
+
+#[derive(askama::Template, Debug, askama_web::WebTemplate)]
+#[template(path = "page/calendar.html")]
+pub struct CalendarPage {
+    pub ctx: index::PageContext,
+    pub cal: Calendar,
+}
 
 #[derive(Debug)]
 pub struct Calendar {
     pub days: Vec<CalendarDay>,
+    pub month: DateTime<Local>,
 }
 
 #[derive(Debug)]
 pub struct CalendarDay {
-    pub date: chrono::DateTime<Local>,
+    pub date: DateTime<Local>,
     pub events: Vec<CalendarEvent>,
     pub is_current_month: bool,
 }
 
 #[derive(Debug)]
 pub struct CalendarEvent {
+    pub id: u64,
     pub title: String,
-    pub from: chrono::DateTime<Local>,
-    pub to: chrono::DateTime<Local>,
+    pub from: DateTime<Local>,
+    pub to: DateTime<Local>,
 }
 
 impl Calendar {
@@ -48,11 +60,13 @@ impl Calendar {
                 date,
                 events: vec![
                     CalendarEvent {
+                        id: 1,
                         title: format!("Event on {}-{}-{}", year, month.number_from_month(), i),
                         from: date,
                         to: date + chrono::Duration::hours(4),
                     },
                     CalendarEvent {
+                        id: 1,
                         title: format!("Event on {}-{}-{}", year, month.number_from_month(), i),
                         from: date,
                         to: date + chrono::Duration::hours(4),
@@ -70,11 +84,13 @@ impl Calendar {
                 date,
                 events: vec![
                     CalendarEvent {
+                        id: 1,
                         title: format!("Event on {}-{}-{}", year, month.number_from_month(), day),
                         from: date,
                         to: date + chrono::Duration::hours(4),
                     },
                     CalendarEvent {
+                        id: 1,
                         title: format!("Event on {}-{}-{}", year, month.number_from_month(), day),
                         from: date,
                         to: date + chrono::Duration::hours(4),
@@ -103,6 +119,7 @@ impl Calendar {
                 date,
                 events: vec![
                     CalendarEvent {
+                        id: 1,
                         title: format!(
                             "Event on {}-{}-{}",
                             year,
@@ -113,6 +130,7 @@ impl Calendar {
                         to: date + chrono::Duration::hours(4),
                     },
                     CalendarEvent {
+                        id: 1,
                         title: format!("Event on {}-{}-{}", year, month.number_from_month(), i),
                         from: date,
                         to: date + chrono::Duration::hours(4),
@@ -122,7 +140,11 @@ impl Calendar {
             });
         }
 
-        Calendar { days }
+        let month = Local
+            .with_ymd_and_hms(year, month.number_from_month(), 1, 0, 0, 0)
+            .unwrap();
+
+        Calendar { days, month }
     }
 }
 

@@ -1,15 +1,22 @@
 <article class="card" ot-animate="fade-up">
     <header>
-        <h3>{{ title }}</h3>
-        <p>{{ owner }}</p>
+        <h3><a href="/news/{{ id }}" class="unstyled">{{ title }}</a></h3>
+        <figure data-variant="avatar" aria-label="Avatar">
+            {{ owner | owner_icon | safe }}
+        </figure>
     </header>
-    <p>{{ summary }}</p>
+    {{ summary | strip_headers | truncate(200) | markdown | safe }}
     <footer class="hstack" style="justify-content: space-between">
         <span class="hstack">
             {% for tag in tags %}
             <span class="badge">{{ tag }}</span>
             {% endfor %}
         </span>
-        {{ date | time_since }}
+        <p
+            title="{{ date | format_date_time }}"
+            style="color: var(--text-muted); cursor: help"
+        >
+            {{ date | time_since }}
+        </p>
     </footer>
 </article>

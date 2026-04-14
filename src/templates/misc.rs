@@ -11,6 +11,7 @@ pub struct Pagination {
 // #[template(path = "news_card.html")]
 #[derive(Debug)]
 pub struct NewsCard {
+    pub id: u64,
     pub title: String,
     pub summary: String,
     pub date: DateTime<Local>,

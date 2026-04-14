@@ -1,6 +1,8 @@
 @font-face {
     font-family: "Karrik";
-    src: url("/static/Karrik-Regular.woff2") format("woff2");
+    src:
+        url("/static/Karrik-Regular.woff2") format("woff2"),
+        url("/static/Karrik-Regular.ttf") format("ttf");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -8,7 +10,9 @@
 
 @font-face {
     font-family: "Karrik";
-    src: url("/static/Karrik-Italic.woff2") format("woff2");
+    src:
+        url("/static/Karrik-Italic.woff2") format("woff2"),
+        url("/static/Karrik-Italic.ttf") format("ttf");
     font-weight: normal;
     font-style: italic;
     font-display: swap;
