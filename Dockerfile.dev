@@ -6,6 +6,8 @@ WORKDIR /atlas
 
 RUN apk add nginx bash
 
+COPY ./splash.txt /atlas/splash.txt
+
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=./target \
     --mount=type=bind,source=./Cargo.toml,target=./Cargo.toml \
@@ -18,7 +20,6 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cargo build \
     && cp ./target/debug/atlas .
 
-COPY ./splash.txt /atlas/splash.txt
 COPY ./static /atlas/static
 
 EXPOSE 8080

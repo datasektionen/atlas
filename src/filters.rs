@@ -1,5 +1,6 @@
 use askama_macros::filter_fn;
 use chrono::{DateTime, Local};
+use rand::seq::IteratorRandom;
 use regex::Regex;
 use std::fmt::Display;
 
@@ -66,6 +67,26 @@ pub fn format_date_time(
 }
 
 #[filter_fn]
+pub fn format_date_query(
+    value: &DateTime<Local>,
+    _env: &dyn askama::Values,
+) -> askama::Result<String> {
+    Ok(value.to_rfc3339())
+}
+
+#[filter_fn]
+pub fn urlencode(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
+    Ok(urlencoding::encode(value).to_string())
+}
+
+#[filter_fn]
+pub fn urldecode(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
+    Ok(urlencoding::decode(value)
+        .map_err(|_| askama::Error::Fmt)?
+        .to_string())
+}
+
+#[filter_fn]
 pub fn format_month(value: &DateTime<Local>, _env: &dyn askama::Values) -> askama::Result<String> {
     Ok(format!("{} {}", value.format("%B"), value.format("%Y")))
 }
@@ -96,9 +117,22 @@ pub fn strip_headers(value: &str, _env: &dyn askama::Values) -> askama::Result<S
 }
 
 #[filter_fn]
-pub fn owner_icon(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
+pub fn owner_icon_url(value: &str, _env: &dyn askama::Values) -> askama::Result<String> {
     let icon_url =
-        "<img src=\"https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png\" alt=\"{}\">".to_string();
+        "https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png".to_string();
 
     Ok(icon_url)
+}
+
+#[filter_fn]
+pub fn choose_rand(value: &'static str, _env: &dyn askama::Values) -> askama::Result<String> {
+    let val = if value.is_empty() {
+        String::new()
+    } else {
+        let mut rng = rand::rng();
+        let choice = value.trim().split('\n').choose(&mut rng).unwrap_or("");
+        choice.to_string()
+    };
+
+    Ok(val)
 }

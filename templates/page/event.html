@@ -22,13 +22,7 @@
         "
     >
         <h1>{{ event.title }}</h1>
-        <figure
-            data-variant="avatar"
-            aria-label="Avatar"
-            style="flex-shrink: 0"
-        >
-            {{ event.owner | owner_icon | safe }}
-        </figure>
+        {% let owner = event.owner %} {% include "figure.html" %}
     </span>
     <div
         class="grid"
@@ -58,7 +52,10 @@
                 <rect width="18" height="18" x="3" y="4" rx="2" />
                 <path d="M3 10h18" />
             </svg>
-            {{ event.from | format_date }}
+            <a
+                href="/calendar?date={{event.from | format_date_query | urlencode }}"
+                >{{ event.from | format_date }}
+            </a>
         </span>
         <span class="hstack" style="gap: var(--space-1); align-items: center">
             <svg

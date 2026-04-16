@@ -1,6 +1,5 @@
 use crate::filters;
-use crate::templates::{calendar, misc};
-use chrono::Datelike;
+use crate::templates::misc;
 
 #[derive(askama::Template, Debug, askama_web::WebTemplate)]
 #[template(path = "page/index.html")]
@@ -19,6 +18,7 @@ pub struct Crumb {
 pub struct PageContext {
     pub user: Option<User>,
     pub crumbs: Vec<Crumb>,
+    pub splash: &'static str,
 }
 
 impl PageContext {
@@ -38,7 +38,12 @@ impl PageContext {
             }
             s
         });
-        Self { user, crumbs }
+        let splash = include_str!("../../splash.txt");
+        Self {
+            user,
+            crumbs,
+            splash,
+        }
     }
 }
 

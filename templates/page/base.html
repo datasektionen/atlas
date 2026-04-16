@@ -38,7 +38,7 @@
                     class="hstack"
                     style="gap: var(--space-4); margin-left: var(--space-6)"
                 >
-                    <a href="/event" class="unstyled">Events</a>
+                    <a href="/feed" class="unstyled">Feed</a>
                     <a href="/calendar" class="unstyled">Calendar</a>
                     <a href="/profile" class="unstyled">Profile</a>
                 </span>
@@ -62,5 +62,8 @@
             {% let crumbs = ctx.crumbs %} {% include "breadcrumb.html" %}
             <article>{% block content %} {% endblock %}</article>
         </main>
+        <footer class="hstack" style="justify-content: center; font-size: 14px">
+            <p>{{ ctx.splash | choose_rand }}: &copy; 2025 Atlas.</p>
+        </footer>
     </body>
 </html>

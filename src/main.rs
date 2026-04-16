@@ -1,4 +1,5 @@
 use num_traits::cast::FromPrimitive;
+use serde::{Deserialize, Serialize};
 mod filters;
 mod templates;
 
@@ -12,15 +13,20 @@ use std::env;
 
 use actix_web::{
     App, HttpRequest, HttpServer, Responder, get, middleware,
-    web::{self, Html},
+    web::{self, Html, Query},
 };
 use askama::Template;
 use chrono::{Datelike, Local, Month};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::EnvFilter;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CalendarQuery {
+    pub date: Option<chrono::DateTime<Local>>,
+}
+
 #[get("/calendar")]
-async fn calendar_page(req: HttpRequest) -> impl Responder {
+async fn calendar_page(query: Query<CalendarQuery>, req: HttpRequest) -> impl Responder {
     let user = Some(templates::index::User {
         name: "Oskar".to_string(),
         avatar_url: "https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png"
@@ -28,7 +34,11 @@ async fn calendar_page(req: HttpRequest) -> impl Responder {
     });
 
     let ctx = PageContext::new(req.path(), user);
-    let now = Local::now();
+    let now = if let Some(d) = query.date {
+        d
+    } else {
+        Local::now()
+    };
     let month = Month::from_u32(now.month()).unwrap();
     Html::new(
         calendar::CalendarPage {
@@ -56,8 +66,8 @@ async fn event_page(id: web::Path<u64>, req: HttpRequest) -> impl Responder {
             event: templates::event::Event {
                 title: format!("Event {}", id),
                 description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
-                from: now,
-                to: now + chrono::Duration::seconds(3600),
+                from: now - chrono::Duration::days(50),
+                to: now,
                 tags: vec!["tag1".to_string(), "tag2".to_string()],
                 owner: "Oskar".to_string(),
                 place: Some("META".to_string()),

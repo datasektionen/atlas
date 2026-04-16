@@ -14,9 +14,7 @@
 </div>
 <header ot-animate="slide-left">
     <h1>{{ news.title }}</h1>
-    <figure data-variant="avatar" aria-label="Avatar">
-        {{ news.owner | owner_icon | safe }}
-    </figure>
+    {% let owner = news.owner %} {% include "figure.html" %}
 </header>
 <div ot-animate="slide-left">{{ news.description | markdown | safe }}</div>
 {% endblock %}
