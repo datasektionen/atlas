@@ -5,6 +5,7 @@ mod templates;
 
 use crate::templates::{
     calendar,
+    feed::FeedPage,
     index::{MainPage, PageContext},
     misc,
 };
@@ -63,7 +64,9 @@ async fn event_page(id: web::Path<u64>, req: HttpRequest) -> impl Responder {
     Html::new(
         templates::event::EventPage {
             ctx,
-            event: templates::event::Event {
+            event:
+            templates::event::Event {
+                id: *id,
                 title: format!("Event {}", id),
                 description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
                 from: now - chrono::Duration::days(50),
@@ -105,6 +108,79 @@ async fn news_page(id: web::Path<u64>, req: HttpRequest) -> impl Responder {
     )
 }
 
+#[get("/feed")]
+async fn feed_page(req: HttpRequest) -> impl Responder {
+    let user = Some(templates::index::User {
+        name: "Oskar".to_string(),
+        avatar_url: "https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png"
+            .to_string(),
+    });
+    let ctx = PageContext::new(req.path(), user);
+    let now = Local::now();
+    let cards = vec![
+        templates::event::Event {
+            id: 1,
+            title: "Event 1".to_string(),
+            description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
+            from: now - chrono::Duration::days(50),
+            to: now,
+            tags: vec!["tag1".to_string(), "tag2".to_string()],
+            owner: "Oskar".to_string(),
+            place: Some("META".to_string()),
+            link: Some("https://datasektionen.se".to_string()),
+        },
+        templates::event::Event {
+            id: 2,
+            title: "Event 2".to_string(),
+            description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
+            from: now - chrono::Duration::days(50),
+            to: now,
+            tags: vec!["tag1".to_string(), "tag2".to_string()],
+            owner: "Oskar".to_string(),
+            place: Some("META".to_string()),
+            link: Some("https://datasektionen.se".to_string()),
+        },
+        templates::event::Event {
+            id: 3,
+            title: "Event 3".to_string(),
+            description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
+            from: now - chrono::Duration::days(50),
+            to: now,
+            tags: vec!["tag1".to_string(), "tag2".to_string()],
+            owner: "Oskar".to_string(),
+            place: Some("META".to_string()),
+            link: Some("https://datasektionen.se".to_string()),
+        },
+         templates::event::Event {
+            id: 4,
+            title: "Event 4".to_string(),
+            description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
+            from: now - chrono::Duration::days(50),
+            to: now,
+            tags: vec!["tag1".to_string(), "tag2".to_string()],
+            owner: "Oskar".to_string(),
+            place: Some("META".to_string()),
+            link: Some("https://datasektionen.se".to_string()),
+        },
+    ];
+    let tags = vec![
+        "tag1".to_string(),
+        "tag2".to_string(),
+        "tag3".to_string(),
+        "tag4".to_string(),
+    ];
+
+    Html::new(
+        FeedPage {
+            ctx,
+            feed: cards,
+            tags,
+        }
+        .render()
+        .unwrap(),
+    )
+}
+
 #[get("/")]
 async fn index(req: HttpRequest) -> impl Responder {
     let user = Some(templates::index::User {
@@ -132,6 +208,7 @@ async fn index(req: HttpRequest) -> impl Responder {
             owner: "Oskar".to_string(),
         },
     ];
+
     // render index template
     Html::new(
         MainPage {
@@ -169,6 +246,7 @@ async fn main() -> std::io::Result<()> {
             .service(calendar_page)
             .service(news_page)
             .service(event_page)
+            .service(feed_page)
             .service(actix_files::Files::new("/static", "./static"))
     })
     .bind(("0.0.0.0", 8080))?

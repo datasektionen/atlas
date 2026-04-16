@@ -12,6 +12,7 @@ pub struct EventPage {
 
 #[derive(Debug)]
 pub struct Event {
+    pub id: u64,
     pub title: String,
     pub description: String,
     pub from: DateTime<Local>,

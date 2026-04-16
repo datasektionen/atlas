@@ -1,0 +1,134 @@
+{% extends "base.html" %} {% block content %}
+<header
+    class="vstack"
+    style="
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+        align-items: flex-start;
+        justify-content: space-between;
+    "
+>
+    <div
+        class="hstack"
+        style="
+            gap: var(--space-2);
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        "
+    >
+        <h1 style="margin-block-end: 0">Feed</h1>
+
+        <ot-dropdown>
+            <button popovertarget="filter" class="outline">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"
+                    />
+                </svg>
+            </button>
+            <article class="card" popover id="filter">
+                <header>
+                    <h3>Filter</h3>
+                </header>
+                <footer>
+                    <button class="outline danger">Filter</button>
+                </footer>
+            </article>
+        </ot-dropdown>
+    </div>
+    <div
+        class="hstack"
+        style="gap: var(--space-2); flex-wrap: wrap"
+        ot-animate="slide-left"
+    >
+        {% for tag in tags %}
+        <span class="badge">
+            {{ tag }}
+            <span
+                class="chip-close hstack"
+                aria-label="Remove filter"
+                style="align-items: center"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-x-icon lucide-x"
+                >
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </span>
+        </span>
+        {% endfor %}
+        <ot-dropdown>
+            <button popovertarget="demo-menu" class="ghost small">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+            </button>
+            <article
+                popover
+                id="demo-menu"
+                class="card flex"
+                style="
+                    width: max-content;
+                    max-width: 400px;
+                    padding: var(--space-2);
+                "
+            >
+                {% for tag in tags %}
+                <button class="ghost">
+                    <span class="badge">{{tag}}</span>
+                </button>
+                {% endfor %}
+            </article>
+        </ot-dropdown>
+    </div>
+</header>
+<div
+    class="grid"
+    style="
+        grid-template-columns: repeat(auto-fit, minmax(min(500px, 86vw), 1fr));
+    "
+>
+    {% for event in feed %} {% let title = &event.title %} {% let id = event.id
+    %} {% let owner = &event.owner %} {% let description = &event.description %}
+    {% let tags = &event.tags %} {% let from = &event.from %} {% let to =
+    &event.to %} {% let place = &event.place %} {% let link = &event.link %} {%
+    include "event_card.html" %} {% endfor %}
+</div>
+<div class="center" style="margin: var(--space-6)">
+    {% let current_page = 3 %} {% let total_pages = 10 %} {% include
+    "pagination.html" %}
+</div>
+
+{% endblock %}
