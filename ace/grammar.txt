@@ -1,0 +1,58 @@
+TYPES:
+string
+[date]
+    date.month, date.year, osv. för delar av datum
+duration (1d => 1 day, 4w => 4 weeks, 3h1m => 3 hours + 1 min)
+int
+
+~ globbar. title_sv ~ "*tapp*"
+
+case insensitive
+
+statisk typanalys på AST så sql inte krashar
+
+man matar in alla identifiers på förhand i en instans av ACE och säger var den hittar dem i databasen, samt datatyp. Även konstanter som mon, tis, tue, osv. samt deras datatyper och värden.
+
+REAL:
+
+primary_expr
+    : IDENTIFIER
+    | CONSTANT
+    | '[' DATE ']'
+    | '(' expr ')'
+    ;
+
+unary_expr
+    : primary_expr
+    | '!' primary_expr
+    ;
+
+rel_expr
+    : unary_expr
+    | rel_expr '<' unary_expr
+    | rel_expr '>' unary_expr
+    | rel_expr '<=' unary_expr
+    | rel_expr '>=' unary_expr
+    ;
+
+eq_expr
+    : rel_expr
+    | eq_expr '==' rel_expr
+    | eq_expr '!=' rel_expr
+    | eq_expr '~' rel_expr
+    | eq_expr '!~' rel_expr
+    ;
+
+and_expr
+    : eq_expr
+    | and_expr '&&' eq_expr
+    ;
+
+or_expr
+    : and_expr
+    | or_expr '||' and_expr
+    ;
+
+expr
+    : or_expr
+    ;
