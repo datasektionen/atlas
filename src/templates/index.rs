@@ -1,11 +1,16 @@
+use chrono::Datelike;
+use chrono::{DateTime, Local};
+
 use crate::filters;
-use crate::templates::misc;
+use crate::templates::{calendar, misc};
 
 #[derive(askama::Template, Debug, askama_web::WebTemplate)]
 #[template(path = "page/index.html")]
 pub struct MainPage {
     pub ctx: PageContext,
     pub news_cards: Vec<misc::NewsCard>,
+    pub days: Vec<calendar::CalendarDay>,
+    pub date: DateTime<Local>,
 }
 
 #[derive(Debug)]

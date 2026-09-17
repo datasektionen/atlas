@@ -1,0 +1,244 @@
+{% extends "base.html" %} {% block content %}
+<div
+    class="hstack"
+    style="justify-content: space-between"
+    ot-animate="slide-left"
+>
+    <div
+        class="hstack"
+        style="gap: var(--space-2); flex-wrap: wrap"
+        ot-animate="slide-left"
+    >
+        {% for tag in event.tags %}
+        <span class="badge">
+            {{ tag }}
+            <span
+                class="chip-close hstack"
+                aria-label="Remove filter"
+                style="align-items: center"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-x-icon lucide-x"
+                >
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </span>
+        </span>
+        {% endfor %}
+        <ot-dropdown>
+            <button popovertarget="demo-menu" class="ghost small">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+            </button>
+            <article
+                popover
+                id="demo-menu"
+                class="card flex"
+                style="
+                    width: max-content;
+                    max-width: 400px;
+                    padding: var(--space-2);
+                "
+            >
+                {% for tag in event.tags %}
+                <button class="ghost">
+                    <span class="badge">{{tag}}</span>
+                </button>
+                {% endfor %}
+            </article>
+        </ot-dropdown>
+    </div>
+</div>
+<header class="vstack" style="gap: var(--space-2)" ot-animate="slide-left">
+    <span
+        class="hstack nowrap"
+        style="
+            gap: var(--space-1);
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        "
+    >
+        <input
+            type="text"
+            class="form-control"
+            value="{{ event.title }}"
+            style="font-size: 2rem; max-width: 40rem"
+        />
+        {% include "figure_dropdown.html" %}
+    </span>
+    <div
+        class="grid fourGrid"
+        style="
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: var(--space-4);
+        "
+        ot-animate="slide-left"
+    >
+        <span class="hstack" style="gap: var(--space-1); align-items: center">
+            <span title="From">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M8 2v4" />
+                    <path d="M16 2v4" />
+                    <rect width="18" height="18" x="3" y="4" rx="2" />
+                    <path d="M3 10h18" />
+                </svg>
+            </span>
+            <input
+                type="datetime-local"
+                value="{{ event.from | format_date_time }}"
+                style="max-width: 20rem"
+            />
+        </span>
+        <span class="hstack" style="gap: var(--space-1); align-items: center">
+            <span title="To">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M8 2v4" />
+                    <path d="M16 2v4" />
+                    <rect width="18" height="18" x="3" y="4" rx="2" />
+                    <path d="M3 10h18" />
+                    <path d="m9 16 2 2 4-4" />
+                </svg>
+            </span>
+            <input
+                type="datetime-local"
+                value="{{ event.to | format_date_time }}"
+                style="max-width: 20rem"
+            />
+        </span>
+        {% if event.place.is_some() %}
+        <span class="hstack" style="gap: var(--space-1); align-items: center">
+            <span title="Place">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                    />
+                    <circle cx="12" cy="10" r="3" />
+                </svg>
+            </span>
+            <input
+                type="text"
+                value="{{ event.place.as_ref().unwrap() }}"
+                style="max-width: 20rem"
+            />
+        </span>
+        {% endif %} {% if event.link.is_some() %}
+        <span class="hstack" style="gap: var(--space-1); align-items: center">
+            <span title="Link">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                    />
+                    <path
+                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                    />
+                </svg>
+            </span>
+            <input
+                type="text"
+                value="{{ event.link.as_ref().unwrap() }}"
+                style="max-width: 20rem"
+            />
+        </span>
+        {% endif %}
+    </div>
+</header>
+<ot-tabs ot-animate="slide-left">
+    <div role="tablist">
+        <button role="tab">Markdown</button>
+        <button role="tab">Preview</button>
+    </div>
+    <div role="tabpanel">
+        <div class="grid fourGrid" style="gap: var(--space-4)">
+            <div class="vstack" ot-animate="fade-in">
+                <h5>Swedish</h5>
+                <textarea name="description-sv" id="description-sv">
+{{ event.description }}</textarea
+                >
+            </div>
+            <div class="vstack" ot-animate="fade-in">
+                <h5>English</h5>
+                <textarea name="description-en" id="description-en">
+{{ event.description }}</textarea
+                >
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel">
+        <div class="grid fourGrid" style="gap: var(--space-4)">
+            <div class="vstack" ot-animate="fade-in">
+                <h5>Swedish</h5>
+                <div>{{ event.description | markdown | safe }}</div>
+            </div>
+            <div class="vstack" ot-animate="fade-in">
+                <h5>English</h5>
+                <div>{{ event.description | markdown | safe }}</div>
+            </div>
+        </div>
+    </div>
+</ot-tabs>
+{% endblock %}

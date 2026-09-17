@@ -108,6 +108,37 @@ async fn news_page(id: web::Path<u64>, req: HttpRequest) -> impl Responder {
     )
 }
 
+#[get("/event/new")]
+async fn new_event(req: HttpRequest) -> impl Responder {
+    let user = Some(templates::index::User {
+        name: "Oskar".to_string(),
+        avatar_url: "https://dsekt-assets.s3.eu-west-1.amazonaws.com/shield-color-white-delta.png"
+            .to_string(),
+    });
+
+    let ctx = PageContext::new(req.path(), user);
+    let now = Local::now();
+    Html::new(
+        templates::event::EventFormPage {
+            ctx,
+            event: templates::event::Event {
+                id: 1,
+                title: "Event 1".to_string(),
+                description: "This `is` **the** description of the _news_. Go here for more: https://datasektionen.se".to_string(),
+                from: now - chrono::Duration::days(50),
+                to: now,
+                tags: vec!["tag1".to_string(), "tag2".to_string()],
+                owner: "Oskar".to_string(),
+                place: Some("META".to_string()),
+                link: Some("https://datasektionen.se".to_string()),
+            },
+            groups: vec!["Group 1".to_string(), "Group 2".to_string(), "Group 3".to_string()],
+        }
+        .render()
+        .unwrap(),
+    )
+}
+
 #[get("/feed")]
 async fn feed_page(req: HttpRequest) -> impl Responder {
     let user = Some(templates::index::User {
@@ -207,13 +238,54 @@ async fn index(req: HttpRequest) -> impl Responder {
             tags: vec!["tag3".to_string(), "tag4".to_string()],
             owner: "Oskar".to_string(),
         },
+        misc::NewsCard {
+            id: 3,
+            title: "Third news".to_string(),
+            summary: "This is the summary of the third news".to_string(),
+            date: now - chrono::Duration::days(50),
+            tags: vec!["tag1".to_string(), "tag4".to_string()],
+            owner: "Oskar".to_string(),
+        },
+        misc::NewsCard {
+            id: 4,
+            title: "Fourth news".to_string(),
+            summary: "This is the summary of the fourth news".to_string(),
+            date: now - chrono::Duration::days(70),
+            tags: vec!["tag2".to_string(), "tag3".to_string()],
+            owner: "Oskar".to_string(),
+        },
     ];
+
+    let now = Local::now();
+    let weekday_offset = now.weekday().num_days_from_monday() as i64;
+    let days = (0..7)
+        .map(|i| calendar::CalendarDay {
+            date: now - chrono::Duration::days(weekday_offset) + chrono::Duration::days(i),
+            events: vec![
+                calendar::CalendarEvent {
+                    id: 1,
+                    title: format!("Event on {}", now + chrono::Duration::days(i)),
+                    from: now + chrono::Duration::days(i),
+                    to: now + chrono::Duration::days(i) + chrono::Duration::hours(4),
+                },
+                calendar::CalendarEvent {
+                    id: 2,
+                    title: format!("Another event on {}", now + chrono::Duration::days(i)),
+                    from: now + chrono::Duration::days(i) + chrono::Duration::hours(5),
+                    to: now + chrono::Duration::days(i) + chrono::Duration::hours(7),
+                },
+            ],
+            is_current_month: true,
+        })
+        .collect::<Vec<_>>();
 
     // render index template
     Html::new(
         MainPage {
             ctx,
             news_cards: cards,
+            date: now,
+            days,
         }
         .render()
         .unwrap(),
@@ -245,6 +317,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(calendar_page)
             .service(news_page)
+            .service(new_event)
             .service(event_page)
             .service(feed_page)
             .service(actix_files::Files::new("/static", "./static"))

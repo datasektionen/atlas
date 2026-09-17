@@ -1,7 +1,8 @@
 {% extends "base.html" %} {% block content %}
 <div class="hstack" style="justify-content: space-between">
-    <span class="hstack">
+    <span class="hstack" ot-animate="fade-up">
         <h1>Calendar</h1>
+        <h4>{{cal.month | format_month}}</h4>
         <button
             data-tooltip="Copy Calendar Link"
             aria-label="Copy calendar link to clipboard"
@@ -27,7 +28,6 @@
                 <path d="M8 2v4" />
             </svg>
         </button>
-        <h4 ot-animate="slide-left">{{cal.month | format_month}}</h4>
     </span>
     {% include "month_select.html" %}
 </div>

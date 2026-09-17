@@ -10,6 +10,14 @@ pub struct EventPage {
     pub event: Event,
 }
 
+#[derive(askama::Template, Debug, askama_web::WebTemplate)]
+#[template(path = "page/event_form.html")]
+pub struct EventFormPage {
+    pub ctx: index::PageContext,
+    pub event: Event,
+    pub groups: Vec<String>,
+}
+
 #[derive(Debug)]
 pub struct Event {
     pub id: u64,

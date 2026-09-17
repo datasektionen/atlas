@@ -66,7 +66,35 @@ article {
     gap: var(--space-2);
 }
 
+.fourGrid {
+    grid-template-columns: 1fr 1fr;
+}
+
 .flex {
     display: flex;
     gap: var(--space-2);
+}
+
+.nowrap {
+    flex-wrap: nowrap;
+}
+
+
+
+@media (max-width: 480px) {
+    article {
+        padding: var(--space-3);
+    }
+
+    body main {
+        padding: var(--space-3);
+    }
+
+    .fourGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .nowrap {
+        flex-wrap: wrap;
+    }
 }

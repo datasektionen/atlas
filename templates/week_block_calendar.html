@@ -1,0 +1,23 @@
+<div style="overflow-x: scroll">
+    <table ot-animate="slide-left">
+        <thead>
+            <tr>
+                <td>mon</td>
+                <td>tue</td>
+                <td>wed</td>
+                <td>thu</td>
+                <td>fri</td>
+                <td>sat</td>
+                <td>sun</td>
+            </tr>
+        </thead>
+        <tr>
+            {% for day in days %}
+            <td style="min-width: 10rem; min-height: 8rem">
+                {% let is_current_month = true %} {% let events = day.events %}
+                {% let day = day.date.day() %} {% include "day_slot.html" %}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
