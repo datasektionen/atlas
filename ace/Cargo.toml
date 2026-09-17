@@ -1,0 +1,8 @@
+[package]
+name = "ace"
+version = "0.1.0"
+edition = "2024"
+description = "ACE - Atlas Calander Expression. A simple boolean expression language for filtering events in Atlas."
+authors = ["Emma Ericsson <emma@krlsg.se>", "Oskar Engström <osen@datasektionen.se>"]
+
+[dependencies]
