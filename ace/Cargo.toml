@@ -6,3 +6,5 @@ description = "ACE - Atlas Calander Expression. A simple boolean expression lang
 authors = ["Emma Ericsson <emma@krlsg.se>", "Oskar Engström <osen@datasektionen.se>"]
 
 [dependencies]
+ace_derive = { path = "./ace_derive" }
+derive_more = { version = "2.1.1", features = ["from"] }
