@@ -151,4 +151,8 @@ pub enum ParseError {
     Expected(AceTokenKind, AceTokenKind, Span),
     #[error("Expected primary expression, but found '{0}' at {1}")]
     Primary(AceTokenKind, Span),
+    #[error("Failed to parse the date '{0}' at {1}")]
+    Date(String, Span),
+    #[error("Failed to parse the duration '{0}' at {1}")]
+    Duration(String, Span),
 }

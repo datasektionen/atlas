@@ -1,4 +1,5 @@
 mod language;
+mod parsetype;
 mod types;
 
 pub use ace_derive::AceInstance;
@@ -91,11 +92,12 @@ mod tests {
             parser::AceParser,
         };
         let out = AceParser::new(AceLexer::lex(
-            "(fippel > -65 + 4w3d) && (date == [2026-09-28]) + \"hej\"",
+            "(fippel > -65 + 4w3d) && (date == [17:32]) + \"hej\"",
         ))
         .parse()
         .unwrap();
 
         // The test is that it doesn't crash...
+        panic!("{out:?}");
     }
 }

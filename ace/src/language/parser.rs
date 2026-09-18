@@ -1,6 +1,6 @@
 use crate::{
     language::lexer::{AceLexer, Lexer},
-    AceAst, AceBinop, AceResult, AceToken, AceTokenKind, AceUnop, ParseError,
+    parsetype, AceAst, AceBinop, AceResult, AceToken, AceTokenKind, AceUnop, ParseError,
 };
 
 pub(crate) struct AceParser<'a> {
@@ -81,23 +81,29 @@ impl<'a> AceParser<'a> {
 
     fn parse_primary(&mut self) -> AceResult<AceAst> {
         let tok = self.lexer.peek_tok()?;
-        let ok = match tok.kind {
-            AceTokenKind::Ident(s) => AceAst::Identifier(s),
-            AceTokenKind::Literal(v) => AceAst::Literal(v.into()),
+        let out = match tok.kind {
+            AceTokenKind::Ident(s) => Ok(AceAst::Identifier(s)),
+            AceTokenKind::Literal(v) => Ok(AceAst::Literal(v.into())),
             // TODO: lös
-            AceTokenKind::Date(s) => AceAst::Identifier(s.into()),
-            AceTokenKind::Duration(s) => AceAst::Identifier(s.into()),
+            AceTokenKind::Date(s) => {
+                if let Some(date) = parsetype::parse_date(s.as_str()) {
+                    Ok(AceAst::Literal(date.into()))
+                } else {
+                    Err(ParseError::Date(s, tok.span).into())
+                }
+            }
+            AceTokenKind::Duration(s) => Ok(AceAst::Identifier(s.into())),
 
             AceTokenKind::ParenL => {
                 self.lexer.discard_tok()?;
                 let out = self.parse();
                 self.lexer.eat_tok(AceTokenKind::ParenR)?;
-                out?
+                out
             }
 
-            _ => return Err(ParseError::Primary(tok.kind, tok.span).into()),
+            _ => Err(ParseError::Primary(tok.kind, tok.span).into()),
         };
         self.lexer.discard_tok()?;
-        Ok(ok)
+        out
     }
 }
