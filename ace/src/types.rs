@@ -1,51 +1,74 @@
 use chrono::{DateTime, Local, TimeDelta};
 
-#[derive(Debug, PartialEq, Eq, Clone, derive_more::From)]
+#[derive(Debug, PartialEq, Eq, Clone, derive_more::From, derive_more::Display)]
 pub enum AceValue {
+    #[display("\"{_0}\"")]
     AceString(String),
     AceInt(i64),
     AceDuration(TimeDelta),
+    #[display("[{_0}]")]
     AceDate(DateTime<Local>),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub(crate) enum AceTokenKind {
+#[derive(Debug, PartialEq, Eq, Clone, derive_more::Display)]
+pub enum AceTokenKind {
+    #[display("{_0}")]
     Ident(String),
     // For literals that cannot fail. I.e. strings and ints.
     Literal(AceValue),
     // Defer parsing these to the parsing step
-    Date(String),     // [2026-09-28 17:00]
+    #[display("[{_0}]")]
+    Date(String), // [2026-09-28 17:00]
     Duration(String), // 1w2d3h5m => 1 week, 2 days, 3 hours, 5 minutes
 
-    ParenL, // (
-    ParenR, // )
-    Not,    // !
-    Plus,   // +
-    Minus,  // -
-    And,    // &&
-    Or,     // ||
-    Lt,     // <
-    Gt,     // >
-    Leq,    // <=
-    Geq,    // >=
-    Eq,     // ==
-    Neq,    // !=
-    Glob,   // ~
-    Nglob,  // !~
-    Period, // .
+    #[display("(")]
+    ParenL,
+    #[display(")")]
+    ParenR,
+    #[display("!")]
+    Not,
+    #[display("+")]
+    Plus,
+    #[display("-")]
+    Minus,
+    #[display("&&")]
+    And,
+    #[display("||")]
+    Or,
+    #[display("<")]
+    Lt,
+    #[display(">")]
+    Gt,
+    #[display("<=")]
+    Leq,
+    #[display(">=")]
+    Geq,
+    #[display("==")]
+    Eq,
+    #[display("!=")]
+    Neq,
+    #[display("~")]
+    Glob,
+    #[display("!~")]
+    Nglob,
+    #[display(".")]
+    Period,
 
+    #[display("(unknown)")]
     Unknown,
+    #[display("(eof)")]
     Eof,
 }
 
-#[derive(Debug, Clone)]
-pub(crate) struct Span {
+#[derive(Debug, Clone, derive_more::Display)]
+#[display("{}--{}", start, end)]
+pub struct Span {
     pub start: usize,
     pub end: usize,
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct AceToken {
+pub struct AceToken {
     pub kind: AceTokenKind,
     pub span: Span,
 }
@@ -59,7 +82,7 @@ impl AceToken {
     }
 }
 
-pub(crate) type AceResult<T> = Result<T, AceError>;
+pub type AceResult<T> = Result<T, AceError>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AceUnop {
@@ -124,8 +147,8 @@ pub enum LexError {
 pub enum ParseError {
     #[error("Premature EOF")]
     Eof,
-    #[error("Expected '{0:?}', but found '{1:?}'")]
-    Expected(AceTokenKind, AceTokenKind),
-    #[error("Invalid primary expression")]
-    Primary(AceToken),
+    #[error("Expected '{0}', but found '{1}' at {2}")]
+    Expected(AceTokenKind, AceTokenKind, Span),
+    #[error("Expected primary expression, but found '{0}' at {1}")]
+    Primary(AceTokenKind, Span),
 }

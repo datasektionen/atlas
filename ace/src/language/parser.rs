@@ -95,7 +95,7 @@ impl<'a> AceParser<'a> {
                 out?
             }
 
-            _ => return Err(ParseError::Primary(tok).into()),
+            _ => return Err(ParseError::Primary(tok.kind, tok.span).into()),
         };
         self.lexer.discard_tok()?;
         Ok(ok)

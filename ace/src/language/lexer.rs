@@ -199,7 +199,7 @@ pub(crate) trait Lexer<'a> {
             if t.kind == target {
                 Ok(())
             } else {
-                Err(ParseError::Expected(target, t.kind).into())
+                Err(ParseError::Expected(target, t.kind, t.span).into())
             }
         } else {
             token.map(|_| ())
