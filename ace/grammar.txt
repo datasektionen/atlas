@@ -1,7 +1,9 @@
 TYPES:
 string
-[date]
-    date.month, date.year, osv. för delar av datum
+[datetime]
+    defaultar till 1970-01-01 och 00:00:00 om antingen datum eller tid utelämnas
+    datetime.month, datetime.year, osv. för delar av datum. lagras som int
+    datetime.time och date.date som strippar bort antingen time eller date (sätter till kl 00:00:00, eller 1970-01-01, för att kunna jämföra med användarskapade datetimes)
 duration (1d => 1 day, 4w => 4 weeks, 3h1m => 3 hours + 1 min)
 int
 
@@ -17,15 +19,19 @@ REAL:
 
 primary_expr
     : IDENTIFIER
-    | CONSTANT
-    | '[' DATE ']'
+    | LITERAL
     | '(' expr ')'
     ;
 
-unary_expr
+dot_expr
     : primary_expr
-    | '!' primary_expr
-    | '-' primary_expr
+    | dot_expr '.' primary_expr
+    ;
+
+unary_expr
+    : dot_expr
+    | '!' dot_expr
+    | '-' dot_expr
     ;
 
 add_expr

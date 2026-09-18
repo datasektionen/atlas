@@ -33,12 +33,14 @@ impl<'a> AceParser<'a> {
         AceParser { lexer }
     }
 
+    // Parse an expression which also happens to be the "root" node.
     pub fn parse(&mut self) -> AceResult<AceAst> {
         self.parse_binop(0)
     }
 
-    // Parse a generic binary expression in reverse order of precedence. You can probably make this
-    // more efficient by generating different functions using match statements with a macro.
+    // Parse a generic sequence of binary expressions in reverse order of precedence. You can
+    // probably make this more efficient by generating different functions using match statements
+    // with a macro, but I don't care right now.
     fn parse_binop(&mut self, idx: usize) -> AceResult<AceAst> {
         if idx >= AceParser::BINOP_PRECEDENCE.len() {
             return self.parse_unop();
@@ -69,17 +71,41 @@ impl<'a> AceParser<'a> {
             let unary_type = match tok.kind {
                 AceTokenKind::Not => AceUnop::Not,
                 AceTokenKind::Minus => AceUnop::Neg,
-                _ => return self.parse_primary(),
+                _ => return self.parse_dot(),
             };
             self.lexer.discard_tok()?;
             let body = self.parse_unop()?;
             Ok(AceAst::unop(unary_type, body))
         } else {
-            self.parse_primary()
+            self.parse_dot()
         }
     }
 
+    // Technically also a binary op, but it has higher precedence than everything else. TODO: avoid
+    // code reuse by making this a macro, in turn optimizing the other binary ops as well.
+    fn parse_dot(&mut self) -> AceResult<AceAst> {
+        let mut left = self.parse_primary()?;
+
+        while let Ok(tok) = self.lexer.peek_tok() {
+            let op = if tok.kind == AceTokenKind::Dot {
+                Some(AceBinop::Dot)
+            } else {
+                None
+            };
+
+            if let Some(op) = op {
+                self.lexer.discard_tok()?;
+                let right = self.parse_primary()?;
+                left = AceAst::binop(op, left, right);
+            } else {
+                break;
+            }
+        }
+        Ok(left)
+    }
+
     fn parse_primary(&mut self) -> AceResult<AceAst> {
+        // Fail on peek since this is the "deepest" we can defer
         let tok = self.lexer.peek_tok()?;
         let out = match tok.kind {
             AceTokenKind::Ident(s) => Ok(AceAst::Identifier(s)),

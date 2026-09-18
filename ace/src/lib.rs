@@ -92,12 +92,11 @@ mod tests {
             parser::AceParser,
         };
         let out = AceParser::new(AceLexer::lex(
-            "(fippel > -65 + 4w3d) && (date == [17:32]) + \"hej\"",
+            "(fippel > -65 + 4w3d) && (date.time == [2026-07-04 17:32].time) + \"hej\"",
         ))
         .parse()
         .unwrap();
 
         // The test is that it doesn't crash...
-        panic!("{out:?}");
     }
 }

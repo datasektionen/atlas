@@ -81,7 +81,7 @@ impl<'a> Cursor<'a> {
                 '+' => AceTokenKind::Plus,
                 '-' => AceTokenKind::Minus,
                 '~' => AceTokenKind::Glob,
-                '.' => AceTokenKind::Period,
+                '.' => AceTokenKind::Dot,
 
                 '!' => self.one_or_two_token(
                     AceTokenKind::Not,

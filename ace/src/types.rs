@@ -52,7 +52,7 @@ pub enum AceTokenKind {
     #[display("!~")]
     Nglob,
     #[display(".")]
-    Period,
+    Dot,
 
     #[display("(unknown)")]
     Unknown,
@@ -92,6 +92,7 @@ pub(crate) enum AceUnop {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AceBinop {
+    Dot,
     Add,
     Sub,
     Lt,
@@ -110,16 +111,11 @@ pub(crate) enum AceBinop {
 pub(crate) enum AceAst {
     Identifier(String),
     Literal(AceValue),
-    PrimaryExpr(Box<AceAst>),
     UnaryExpr(AceUnop, Box<AceAst>),
     BinaryExpr(AceBinop, Box<AceAst>, Box<AceAst>),
 }
 
 impl AceAst {
-    pub(crate) fn primary(expr: AceAst) -> AceAst {
-        AceAst::PrimaryExpr(Box::new(expr))
-    }
-
     pub(crate) fn unop(op: AceUnop, operand: AceAst) -> AceAst {
         AceAst::UnaryExpr(op, Box::new(operand))
     }
