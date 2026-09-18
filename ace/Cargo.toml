@@ -7,4 +7,6 @@ authors = ["Emma Ericsson <emma@krlsg.se>", "Oskar Engström <osen@datasektionen
 
 [dependencies]
 ace_derive = { path = "./ace_derive" }
+chrono = "0.4.45"
 derive_more = { version = "2.1.1", features = ["from"] }
+thiserror = "2.0.20"

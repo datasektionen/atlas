@@ -25,14 +25,21 @@ primary_expr
 unary_expr
     : primary_expr
     | '!' primary_expr
+    | '-' primary_expr
+    ;
+
+add_expr
+    : unary_expr
+    | add_expr '+' unary_expr
+    | add_expr '-' unary_expr
     ;
 
 rel_expr
-    : unary_expr
-    | rel_expr '<' unary_expr
-    | rel_expr '>' unary_expr
-    | rel_expr '<=' unary_expr
-    | rel_expr '>=' unary_expr
+    : add_expr
+    | rel_expr '<' add_expr
+    | rel_expr '>' add_expr
+    | rel_expr '<=' add_expr
+    | rel_expr '>=' add_expr
     ;
 
 eq_expr
