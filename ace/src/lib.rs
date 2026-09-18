@@ -34,10 +34,9 @@ mod tests {
 
     #[test]
     fn lex() {
-        use crate::language::lexer::lex;
-        let tokens: Vec<_> = lex("(fippel > -65 + 4w3d) && (date == [2026-09-28]) + \"hej\"")
-            .map(|t| t.unwrap().kind)
-            .collect();
+        use crate::language::lexer::{AceLexer, Lexer};
+        let lexer = AceLexer::lex("(fippel > -65 + 4w3d) && (date == [2026-09-28]) + \"hej\"");
+        let tokens: Vec<_> = lexer.map(|t| t.unwrap().kind).collect();
 
         use AceTokenKind::*;
         assert_eq!(
@@ -65,17 +64,38 @@ mod tests {
 
     #[test]
     fn lex_fail() {
-        use crate::language::lexer::lex;
-        let date_fail = lex("[2026").map(|t| t.err().unwrap()).next().unwrap();
-        let str_fail = lex("\"2026").map(|t| t.err().unwrap()).next().unwrap();
+        use crate::language::lexer::{AceLexer, Lexer};
+        let date_fail = AceLexer::lex("[2026")
+            .map(|t| t.err().unwrap())
+            .next()
+            .unwrap();
+        let str_fail = AceLexer::lex("\"2026")
+            .map(|t| t.err().unwrap())
+            .next()
+            .unwrap();
 
         assert!(match date_fail {
-            LexError::ReachedEof(c) => c == ']',
-            //_ => false,
+            AceError::Lex(LexError::ReachedEof(c)) => c == ']',
+            _ => false,
         });
         assert!(match str_fail {
-            LexError::ReachedEof(c) => c == '"',
-            //_ => false,
+            AceError::Lex(LexError::ReachedEof(c)) => c == '"',
+            _ => false,
         });
+    }
+
+    #[test]
+    fn parse() {
+        use crate::language::{
+            lexer::{AceLexer, Lexer},
+            parser::AceParser,
+        };
+        let out = AceParser::new(AceLexer::lex(
+            "(fippel > -65 + 4w3d) && (date == [2026-09-28]) + \"hej\"",
+        ))
+        .parse()
+        .unwrap();
+
+        // The test is that it doesn't crash...
     }
 }
