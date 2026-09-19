@@ -1,4 +1,4 @@
-use crate::{AceError, AceResult, AceToken, AceTokenKind, LexError, ParseError};
+use crate::{AceResult, AceToken, AceTokenKind, LexError, ParseError};
 use std::{iter::Peekable, str::Chars};
 
 pub(crate) struct Cursor<'a> {

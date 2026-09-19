@@ -1,6 +1,6 @@
 use crate::{
     language::lexer::{AceLexer, Lexer},
-    parsetype, AceAst, AceBinop, AceResult, AceToken, AceTokenKind, AceUnop, ParseError,
+    parsetype, AceAst, AceBinop, AceResult, AceTokenKind, AceUnop, ParseError,
 };
 
 pub(crate) struct AceParser<'a> {
@@ -111,14 +111,14 @@ impl<'a> AceParser<'a> {
             AceTokenKind::Ident(s) => Ok(AceAst::Identifier(s)),
             AceTokenKind::Literal(v) => Ok(AceAst::Literal(v.into())),
             // TODO: lös
-            AceTokenKind::Date(s) => {
-                if let Some(date) = parsetype::parse_date(s.as_str()) {
-                    Ok(AceAst::Literal(date.into()))
-                } else {
-                    Err(ParseError::Date(s, tok.span).into())
-                }
-            }
-            AceTokenKind::Duration(s) => Ok(AceAst::Identifier(s.into())),
+            AceTokenKind::Date(s) => match parsetype::parse_date(s.as_str()) {
+                Some(date) => Ok(AceAst::Literal(date.into())),
+                None => Err(ParseError::Date(s, tok.span).into()),
+            },
+            AceTokenKind::Duration(s) => match parsetype::parse_duration(s.as_str()) {
+                Ok(dur) => Ok(AceAst::Literal(dur.into())),
+                Err(err) => Err(ParseError::Duration(err, tok.span).into()),
+            },
 
             AceTokenKind::ParenL => {
                 self.lexer.discard_tok()?;

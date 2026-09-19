@@ -1,11 +1,20 @@
-use chrono::{DateTime, Local, TimeDelta};
+use chrono::{DateTime, Local};
+
+// Modeled after INTERVAL in Postgres
+#[derive(Debug, PartialEq, Eq, Clone, Default, derive_more::Display)]
+#[display("{}M{}d{}ms", months, days, ms)]
+pub struct Duration {
+    pub months: i32,
+    pub days: i32,
+    pub ms: i64,
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, derive_more::From, derive_more::Display)]
 pub enum AceValue {
     #[display("\"{_0}\"")]
     AceString(String),
     AceInt(i64),
-    AceDuration(TimeDelta),
+    AceDuration(Duration),
     #[display("[{_0}]")]
     AceDate(DateTime<Local>),
 }
@@ -149,6 +158,14 @@ pub enum ParseError {
     Primary(AceTokenKind, Span),
     #[error("Failed to parse the date '{0}' at {1}")]
     Date(String, Span),
-    #[error("Failed to parse the duration '{0}' at {1}")]
-    Duration(String, Span),
+    #[error("Failed to parse the duration at {1}: {0}")]
+    Duration(DurationError, Span),
+}
+
+#[derive(Debug, Clone, thiserror::Error)]
+pub enum DurationError {
+    #[error("Missing last unit")]
+    MissingUnit,
+    #[error("No such unit '{0}'")]
+    InvalidUnit(String),
 }
