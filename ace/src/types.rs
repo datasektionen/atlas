@@ -93,34 +93,53 @@ impl AceToken {
 
 pub type AceResult<T> = Result<T, AceError>;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
 pub(crate) enum AceUnop {
+    #[display("!")]
     Not,
+    #[display("-")]
     Neg,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
 pub(crate) enum AceBinop {
+    #[display(".")]
     Dot,
+    #[display("+")]
     Add,
+    #[display("-")]
     Sub,
+    #[display("<")]
     Lt,
+    #[display(">")]
     Gt,
+    #[display("<=")]
     Leq,
+    #[display(">=")]
     Geq,
+    #[display("==")]
     Eq,
+    #[display("!=")]
     Neq,
+    #[display("~")]
     Glob,
+    #[display("!~")]
     Nglob,
+    #[display("&&")]
     And,
+    #[display("||")]
     Or,
 }
 
-#[derive(Debug)]
+#[derive(Debug, derive_more::Display)]
 pub(crate) enum AceAst {
+    #[display("{_0}")]
     Identifier(String),
+    #[display("{_0}")]
     Literal(AceValue),
+    #[display("({_0}{_1})")]
     UnaryExpr(AceUnop, Box<AceAst>),
+    #[display("({_1} {_0} {_2})")]
     BinaryExpr(AceBinop, Box<AceAst>, Box<AceAst>),
 }
 
@@ -131,6 +150,31 @@ impl AceAst {
 
     pub(crate) fn binop(op: AceBinop, left: AceAst, right: AceAst) -> AceAst {
         AceAst::BinaryExpr(op, Box::new(left), Box::new(right))
+    }
+
+    pub fn pretty_print(&self) -> String {
+        let mut buf = String::new();
+        self.pp_impl(&mut buf, 0);
+        buf
+    }
+
+    fn pp_impl(&self, buf: &mut String, nindent: usize) {
+        const INDENT_STR: &str = "  ";
+        let indent = INDENT_STR.repeat(nindent);
+
+        match self {
+            AceAst::Identifier(s) => buf.push_str(format!("{indent}{s}\n").as_str()),
+            AceAst::Literal(s) => buf.push_str(format!("{indent}{s}\n").as_str()),
+            AceAst::UnaryExpr(op, body) => {
+                buf.push_str(format!("{indent}un:{op}\n").as_str());
+                body.pp_impl(buf, nindent + 1);
+            }
+            AceAst::BinaryExpr(op, left, right) => {
+                buf.push_str(format!("{indent}bin:{op}\n").as_str());
+                left.pp_impl(buf, nindent + 1);
+                right.pp_impl(buf, nindent + 1);
+            }
+        }
     }
 }
 
