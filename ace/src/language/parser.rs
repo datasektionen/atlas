@@ -8,7 +8,8 @@ pub(crate) struct AceParser<'a> {
 }
 
 macro_rules! add_binop {
-    ($name:ident, $next:ident, $($token_kind:pat => $op:expr),*$(,)*) => {
+    // Left associativity
+    (left, $name:ident, $next:ident, $($token_kind:pat => $op:expr),*$(,)*) => {
         fn $name(&mut self) -> AceResult<AceAst> {
             let mut left = self.$next()?;
 
@@ -19,13 +20,35 @@ macro_rules! add_binop {
                 };
 
                 self.lexer.discard_tok()?;
-                let right = self.$name()?;
+                let right = self.$next()?;
                 left = AceAst::binop(op, left, right);
             }
 
             Ok(left)
         }
     };
+
+    // Right associativity
+    (right, $name:ident, $next:ident, $($token_kind:pat => $op:expr),*$(,)*) => {
+        fn $name(&mut self) -> AceResult<AceAst> {
+            let mut left = self.$next()?;
+
+            if let Ok(tok) = self.lexer.peek_tok() {
+                let op = match tok.kind {
+                    $($token_kind => Some($op),)*
+                    _ => None,
+                };
+
+                if let Some(op) = op {
+                    self.lexer.discard_tok()?;
+                    let right = self.$name()?;
+                    left = AceAst::binop(op, left, right);
+                }
+            }
+
+            Ok(left)
+        }
+    }
 }
 
 macro_rules! add_unop {
@@ -56,25 +79,25 @@ impl<'a> AceParser<'a> {
         self._p_or()
     }
 
-    add_binop!(_p_or, _p_and,
+    add_binop!(left, _p_or, _p_and,
         AceTokenKind::Or => AceBinop::Or,
     );
-    add_binop!(_p_and, _p_eq,
+    add_binop!(left, _p_and, _p_eq,
         AceTokenKind::And => AceBinop::And,
     );
-    add_binop!(_p_eq, _p_rel,
+    add_binop!(left, _p_eq, _p_rel,
         AceTokenKind::Eq => AceBinop::Eq,
         AceTokenKind::Neq => AceBinop::Neq,
         AceTokenKind::Glob => AceBinop::Glob,
         AceTokenKind::Nglob =>  AceBinop::Nglob,
     );
-    add_binop!(_p_rel, _p_add,
+    add_binop!(left, _p_rel, _p_add,
         AceTokenKind::Lt => AceBinop::Lt,
         AceTokenKind::Gt => AceBinop::Gt,
         AceTokenKind::Leq => AceBinop::Leq,
         AceTokenKind::Geq => AceBinop::Geq,
     );
-    add_binop!(_p_add, _p_un,
+    add_binop!(left, _p_add, _p_un,
         AceTokenKind::Plus => AceBinop::Add,
         AceTokenKind::Minus => AceBinop::Sub,
     );
@@ -82,7 +105,7 @@ impl<'a> AceParser<'a> {
         AceTokenKind::Not => AceUnop::Not,
         AceTokenKind::Minus => AceUnop::Neg,
     );
-    add_binop!(_p_dot, _p_primary,
+    add_binop!(left, _p_dot, _p_primary,
         AceTokenKind::Dot => AceBinop::Dot,
     );
 

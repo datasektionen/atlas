@@ -152,6 +152,7 @@ impl AceAst {
         AceAst::BinaryExpr(op, Box::new(left), Box::new(right))
     }
 
+    #[allow(unused)]
     pub fn pretty_print(&self) -> String {
         let mut buf = String::new();
         self.pp_impl(&mut buf, 0);
