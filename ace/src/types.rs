@@ -9,6 +9,21 @@ pub struct Duration {
     pub ms: i64,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum AceType {
+    Unknown,
+    AceString,
+    AceInt,
+    AceDuration,
+    AceDate,
+}
+
+impl Default for AceType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, derive_more::From, derive_more::Display)]
 pub enum AceValue {
     #[display("\"{_0}\"")]
@@ -17,6 +32,17 @@ pub enum AceValue {
     AceDuration(Duration),
     #[display("[{_0}]")]
     AceDate(DateTime<Local>),
+}
+
+impl AceValue {
+    pub fn typ(&self) -> AceType {
+        match self {
+            AceValue::AceString(_) => AceType::AceString,
+            AceValue::AceInt(_) => AceType::AceInt,
+            AceValue::AceDuration(_) => AceType::AceDuration,
+            AceValue::AceDate(_) => AceType::AceDate,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, derive_more::Display)]
@@ -69,7 +95,7 @@ pub enum AceTokenKind {
     Eof,
 }
 
-#[derive(Debug, Clone, derive_more::Display)]
+#[derive(Debug, Clone, Copy, derive_more::Display)]
 #[display("{}--{}", start, end)]
 pub struct Span {
     pub start: usize,
@@ -132,24 +158,107 @@ pub(crate) enum AceBinop {
 }
 
 #[derive(Debug, derive_more::Display)]
+#[display("{span}, {typ:?}")]
+pub(crate) struct AceAstMeta {
+    pub span: Span,
+    pub typ: AceType,
+}
+
+impl AceAstMeta {
+    pub fn new(span: Span) -> AceAstMeta {
+        AceAstMeta {
+            span,
+            // Will be assigned during the semantic analysis phase
+            typ: AceType::Unknown,
+        }
+    }
+}
+
+#[derive(Debug, derive_more::Display)]
 pub(crate) enum AceAst {
-    #[display("{_0}")]
-    Identifier(String),
-    #[display("{_0}")]
-    Literal(AceValue),
-    #[display("({_0}{_1})")]
-    UnaryExpr(AceUnop, Box<AceAst>),
-    #[display("({_1} {_0} {_2})")]
-    BinaryExpr(AceBinop, Box<AceAst>, Box<AceAst>),
+    #[display("{_1}")]
+    Identifier(AceAstMeta, String),
+    #[display("{_1}")]
+    Literal(AceAstMeta, AceValue),
+    #[display("({_1}{_2})")]
+    UnaryExpr(AceAstMeta, AceUnop, Box<AceAst>),
+    #[display("({_2} {_1} {_3})")]
+    BinaryExpr(AceAstMeta, AceBinop, Box<AceAst>, Box<AceAst>),
 }
 
 impl AceAst {
+    pub(crate) fn meta(&self) -> &AceAstMeta {
+        match self {
+            AceAst::Identifier(m, _) => &m,
+            AceAst::Literal(m, _) => &m,
+            AceAst::UnaryExpr(m, _, _) => &m,
+            AceAst::BinaryExpr(m, _, _, _) => &m,
+        }
+    }
+
+    pub(crate) fn ident(val: String, span: Span) -> AceAst {
+        AceAst::Identifier(AceAstMeta::new(span), val)
+    }
+
+    pub(crate) fn lit(val: AceValue, span: Span) -> AceAst {
+        AceAst::Literal(AceAstMeta::new(span), val)
+    }
+
     pub(crate) fn unop(op: AceUnop, operand: AceAst) -> AceAst {
-        AceAst::UnaryExpr(op, Box::new(operand))
+        let span = operand.meta().span;
+        AceAst::UnaryExpr(AceAstMeta::new(span), op, Box::new(operand))
     }
 
     pub(crate) fn binop(op: AceBinop, left: AceAst, right: AceAst) -> AceAst {
-        AceAst::BinaryExpr(op, Box::new(left), Box::new(right))
+        let lspan = &left.meta().span;
+        let rspan = &right.meta().span;
+        let span = Span {
+            start: lspan.start,
+            end: rspan.end,
+        };
+        AceAst::BinaryExpr(AceAstMeta::new(span), op, Box::new(left), Box::new(right))
+    }
+
+    pub(crate) fn analyze<T>(self) -> AceResult<AceAst>
+    where
+        T: crate::language::instance::AceInstance,
+    {
+        let out = match self {
+            AceAst::Identifier(mut m, s) => {
+                let (exists, val) = T::get_value(s.as_str());
+                if !exists {
+                    return Err(ParseError::Identifier(s.to_string(), m.span).into());
+                }
+                m.typ = match val {
+                    Some(v) => v.typ(),
+                    None => AceType::default(),
+                };
+
+                AceAst::Identifier(m, s)
+            }
+            AceAst::Literal(mut m, v) => {
+                m.typ = v.typ();
+
+                AceAst::Literal(m, v)
+            }
+            AceAst::UnaryExpr(mut m, op, body) => {
+                // TODO: calculate based on the operation
+                let body = body.analyze::<T>()?;
+                m.typ = AceType::default();
+
+                AceAst::UnaryExpr(m, op, Box::new(body))
+            }
+            AceAst::BinaryExpr(mut m, op, left, right) => {
+                // TODO: calculate based on the operation
+                let left = left.analyze::<T>()?;
+                let right = right.analyze::<T>()?;
+                m.typ = AceType::default();
+
+                AceAst::BinaryExpr(m, op, Box::new(left), Box::new(right))
+            }
+        };
+
+        Ok(out)
     }
 
     #[allow(unused)]
@@ -164,14 +273,14 @@ impl AceAst {
         let indent = INDENT_STR.repeat(nindent);
 
         match self {
-            AceAst::Identifier(s) => buf.push_str(format!("{indent}{s}\n").as_str()),
-            AceAst::Literal(s) => buf.push_str(format!("{indent}{s}\n").as_str()),
-            AceAst::UnaryExpr(op, body) => {
-                buf.push_str(format!("{indent}un:{op}\n").as_str());
+            AceAst::Identifier(m, s) => buf.push_str(format!("{indent}{s} ({m})\n").as_str()),
+            AceAst::Literal(m, s) => buf.push_str(format!("{indent}{s} ({m})\n").as_str()),
+            AceAst::UnaryExpr(m, op, body) => {
+                buf.push_str(format!("{indent}un:{op} ({m})\n").as_str());
                 body.pp_impl(buf, nindent + 1);
             }
-            AceAst::BinaryExpr(op, left, right) => {
-                buf.push_str(format!("{indent}bin:{op}\n").as_str());
+            AceAst::BinaryExpr(m, op, left, right) => {
+                buf.push_str(format!("{indent}bin:{op} ({m})\n").as_str());
                 left.pp_impl(buf, nindent + 1);
                 right.pp_impl(buf, nindent + 1);
             }
@@ -205,6 +314,8 @@ pub enum ParseError {
     Date(String, Span),
     #[error("Failed to parse the duration at {1}: {0}")]
     Duration(DurationError, Span),
+    #[error("Unknown identifier '{0}' at {1}")]
+    Identifier(String, Span),
 }
 
 #[derive(Debug, Clone, thiserror::Error)]

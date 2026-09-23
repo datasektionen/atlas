@@ -98,5 +98,38 @@ mod tests {
         .unwrap();
 
         // The test is that it doesn't crash...
+        //panic!("{}", out.pretty_print());
+    }
+
+    #[test]
+    fn analyze() {
+        use crate::language::{
+            lexer::{AceLexer, Lexer},
+            parser::AceParser,
+        };
+        use crate::parsetype::parse_date;
+
+        use crate as ace;
+        #[derive(AceInstance)]
+        #[constants(date = parse_date("17:32").unwrap())]
+        struct FippelInstance {
+            #[db = "post.fippel"]
+            fippel: i64,
+            // TODO: Remove. Only here temporarily to prevent analysis from failing on dot
+            // expressions, since they contain "special" identifiers.
+            #[db = "post.time"]
+            time: String,
+        }
+
+        let out = AceParser::new(AceLexer::lex(
+            "(fippel > -65 + 4w3d) && (date.time == [2026-07-04 17:32].time) + \"hej\"",
+        ))
+        .parse()
+        .unwrap()
+        .analyze::<FippelInstance>()
+        .unwrap();
+
+        // The test is that it doesn't crash...
+        //panic!("{}", out.pretty_print());
     }
 }

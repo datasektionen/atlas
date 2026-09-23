@@ -114,14 +114,14 @@ impl<'a> AceParser<'a> {
         // Fail on peek since this is the "deepest" we can defer
         let tok = self.lexer.peek_tok()?;
         let out = match tok.kind {
-            AceTokenKind::Ident(s) => Ok(AceAst::Identifier(s)),
-            AceTokenKind::Literal(v) => Ok(AceAst::Literal(v.into())),
+            AceTokenKind::Ident(s) => Ok(AceAst::ident(s, tok.span)),
+            AceTokenKind::Literal(v) => Ok(AceAst::lit(v.into(), tok.span)),
             AceTokenKind::Date(s) => match parsetype::parse_date(s.as_str()) {
-                Some(date) => Ok(AceAst::Literal(date.into())),
+                Some(date) => Ok(AceAst::lit(date.into(), tok.span)),
                 None => Err(ParseError::Date(s, tok.span).into()),
             },
             AceTokenKind::Duration(s) => match parsetype::parse_duration(s.as_str()) {
-                Ok(dur) => Ok(AceAst::Literal(dur.into())),
+                Ok(dur) => Ok(AceAst::lit(dur.into(), tok.span)),
                 Err(err) => Err(ParseError::Duration(err, tok.span).into()),
             },
 
